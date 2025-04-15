@@ -28,20 +28,22 @@
 <p><strong class="example">Example 1:</strong></p>
 
 <pre>
-<strong>Input:</strong> numCourses = 2, prerequisites = [[1,0]]
-<strong>Output:</strong> true
-<strong>Explanation:</strong> There are a total of 2 courses to take. 
-To take course 1 you should have finished course 0. So it is possible.
-</pre>
+ <strong>Input:</strong> numCourses = 2, prerequisites = [[1,0]]
+ <strong>Output:</strong> true
+ <strong>Explanation:</strong> There are a total of 2 courses to take. 
+ To take course 1 you should have finished course 0. So it is possible.
+ </pre
+>
 
 <p><strong class="example">Example 2:</strong></p>
 
 <pre>
-<strong>Input:</strong> numCourses = 2, prerequisites = [[1,0],[0,1]]
-<strong>Output:</strong> false
-<strong>Explanation:</strong> There are a total of 2 courses to take. 
-To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
-</pre>
+ <strong>Input:</strong> numCourses = 2, prerequisites = [[1,0],[0,1]]
+ <strong>Output:</strong> false
+ <strong>Explanation:</strong> There are a total of 2 courses to take. 
+ To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
+ </pre
+>
 
 <p>&nbsp;</p>
 <p><strong>Constraints:</strong></p>
@@ -84,3 +86,102 @@ Topological Sort
     >.
   </li>
 </ul>
+
+<h3>Editorial</h3>
+
+<p>
+  The problem asks whether it is possible to finish all courses given a set of
+  prerequisites. This is equivalent to detecting a cycle in a directed graph. If
+  a cycle exists, it is impossible to finish all courses because you would be
+  stuck in a circular dependency.
+</p>
+
+<p>
+  We can use Depth-First Search (DFS) to detect cycles. The idea is to traverse
+  the graph, marking each node as "visiting" while exploring its neighbors. If
+  we encounter a node that is already marked as "visiting" during the DFS
+  traversal, it indicates a cycle.
+</p>
+
+<p>The algorithm works as follows:</p>
+
+<ol>
+  <li>
+    Build an adjacency list to represent the graph, where each course is a node
+    and each prerequisite represents a directed edge.
+  </li>
+  <li>
+    Create an array <code>visited</code> to keep track of the status of each
+    node during the DFS traversal. The states are:
+    <ul>
+      <li><code>0</code>: Not visited</li>
+      <li><code>1</code>: Visiting (currently in the recursion stack)</li>
+      <li><code>2</code>: Visited (already explored)</li>
+    </ul>
+  </li>
+  <li>
+    For each course, if it has not been visited, start a DFS traversal from that
+    course.
+  </li>
+  <li>
+    During the DFS traversal, mark the current course as "visiting". Then,
+    explore its neighbors. If any neighbor is also in the "visiting" state, it
+    means we have found a cycle, and we return <code>false</code>.
+  </li>
+  <li>
+    After exploring all neighbors, mark the current course as "visited" and
+    return <code>true</code>.
+  </li>
+  <li>
+    If we have explored all courses without finding a cycle, it means we can
+    finish all courses, and we return <code>true</code>.
+  </li>
+</ol>
+
+<h3>Solution</h3>
+
+<pre>
+ class Solution {
+  public boolean canFinish(int numCourses, int[][] prerequisites) {
+  List&lt;List&lt;Integer&gt;&gt; adj = new ArrayList&lt;&gt;(numCourses);
+  for (int i = 0; i &lt; numCourses; i++) {
+  adj.add(new ArrayList&lt;&gt;());
+  }
+
+  for (int[] prerequisite : prerequisites) {
+  adj.get(prerequisite[1]).add(prerequisite[0]);
+  }
+
+  int[] visited = new int[numCourses];
+
+  for (int i = 0; i &lt; numCourses; i++) {
+  if (visited[i] == 0) {
+  if (!dfs(i, adj, visited)) {
+  return false;
+  }
+  }
+  }
+
+  return true;
+  }
+
+  private boolean dfs(int course, List&lt;List&lt;Integer&gt;&gt; adj, int[] visited) {
+  visited[course] = 1; // Visiting
+
+  for (int neighbor : adj.get(course)) {
+  if (visited[neighbor] == 1) {
+  return false; // Cycle detected
+  }
+  if (visited[neighbor] == 0) {
+  if (!dfs(neighbor, adj, visited)) {
+  return false;
+  }
+  }
+  }
+
+  visited[course] = 2; // Visited
+  return true;
+  }
+ }
+ </pre
+>

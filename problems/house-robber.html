@@ -49,4 +49,52 @@ Total amount you can rob = 2 + 9 + 1 = 12.
   <li><code>0 &lt;= nums[i] &lt;= 400</code></li>
 </ul>
 
-<strong>Tags:</strong> Array, Dynamic Programming
+<h3>Editorial</h3>
+
+<p>
+  This problem is a classic dynamic programming problem. We can define
+  <code>dp[i]</code> as the maximum amount of money we can rob from the first
+  <code>i</code> houses. The key is to decide whether to rob the
+  <code>i</code>-th house or not.
+</p>
+
+<ul>
+  <li>
+    If we rob the <code>i</code>-th house, we cannot rob the
+    <code>(i-1)</code>-th house. So, <code>dp[i] = dp[i-2] + nums[i]</code>.
+  </li>
+  <li>
+    If we don't rob the <code>i</code>-th house, we can rob the first
+    <code>i-1</code> houses. So, <code>dp[i] = dp[i-1]</code>.
+  </li>
+</ul>
+
+<p>
+  We take the maximum of the two cases to be the value of <code>dp[i]</code>.
+  The base cases are <code>dp[0] = nums[0]</code>, and
+  <code>dp[1] = max(nums[0], nums[1])</code>.
+</p>
+
+<h3>Solution</h3>
+
+<pre>
+<code>
+public class Solution {
+    public int rob(int[] nums) {
+        int n = nums.length;
+        if (n == 0) return 0;
+        if (n == 1) return nums[0];
+
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        dp[1] = Math.max(nums[0], nums[1]);
+
+        for (int i = 2; i < n; i++) {
+            dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]);
+        }
+
+        return dp[n - 1];
+    }
+}
+</code>
+</pre>

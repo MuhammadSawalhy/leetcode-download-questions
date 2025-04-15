@@ -41,7 +41,7 @@
 
 <pre>
 <strong>Input</strong>
-[&quot;MedianFinder&quot;, &quot;addNum&quot;, &quot;addNum&quot;, &quot;findMedian&quot;, &quot;addNum&quot;, &quot;findMedian&quot;]
+["MedianFinder", "addNum", "addNum", "findMedian", "addNum", "findMedian"]
 [[], [1], [2], [], [3], []]
 <strong>Output</strong>
 [null, null, null, 1.5, null, 2.0]
@@ -89,81 +89,15 @@ medianFinder.findMedian(); // return 2.0
 <strong>Tags:</strong> Two Pointers, Design, Sorting, Heap (Priority Queue),
 Data Stream
 
-<h3>Solution Summary</h3>
-
-✔️ Solution 1: MaxHeap to store a half of low numbers, MinHeap to store a half
-of high numbers - The idea is to divide numbers into 2 balanced halves
 <h3>Solution</h3>
 
 <p>
   <strong
-    >✔️ Solution 1: MaxHeap to store a half of low numbers, MinHeap to store a
+    >✔️ Solution: MaxHeap to store a half of low numbers, MinHeap to store a
     half of high numbers</strong
   >
 </p>
-<ul>
-  <li>
-    The idea is to divide numbers into 2 balanced halves, one half
-    <code>low</code> stores low numbers, the other half <code>high</code> stores
-    high numbers. To access the median in <code>O(1)</code>, we need a data
-    structure that give us the maximum of <code>low</code> half and the minimum
-    of <code>high</code> half in <code>O(1)</code>. That's where
-    <code>maxHeap</code> and <code>minHeap</code> come into play.
-  </li>
-  <li>
-    We use <code>maxHeap</code> to store a half of <strong>low numbers</strong>,
-    top of the maxHeap is the highest number among low numbers.
-  </li>
-  <li>
-    We use <code>minHeap</code> to store a half of
-    <strong>high numbers</strong>, top of the minHeap is the lowest number among
-    high numbers.
-  </li>
-  <li>
-    We need to balance the size between <code>maxHeap</code> and
-    <code>minHeap</code> while processing. Hence after adding
-    <code>k</code> elements,
-  </li>
-  <li>
-    If <code>k = 2 * i</code> then <code>maxHeap.size = minHeap.size = i</code>
-  </li>
-  <li>
-    If <code>k = 2 * i + 1</code>, let <code>maxHeap</code> store 1 element more
-    than <code>minHeap</code>, then
-    <code>maxHeap.size = minHeap.size + 1</code>.
-  </li>
-  <li>
-    When adding a new number <code>num</code> into our
-    <code>MedianFinder</code>:
-  </li>
-  <li>
-    Firstly, add <code>num</code> to the <code>maxHeap</code>, now
-    <code>maxHeap</code> may contain the big element (which should belong to
-    <code>minHeap</code>). So we need to balance, by removing the highest
-    element from <code>maxHeap</code>, and offer it to <code>minHeap</code>.
-  </li>
-  <li>
-    Now, the <code>minHeap</code> might hold more elements than
-    <code>maxHeap</code>, in that case, we need to balance the size, by removing
-    the lowest element from <code>minHeap</code> and offer it back to
-    <code>maxHeap</code>.
-  </li>
-  <li>When doing <code>findMedian()</code>:</li>
-  <li>
-    If <code>maxHeap.size &gt; minHeap.size</code> return top of the
-    <code>maxHeap</code>, which is the highest number amongs low numbers.
-  </li>
-  <li>
-    Else if <code>maxHeap.size == minHeap</code> return the
-    <code>(maxHeap.top() + minHeap.top()) / 2</code>.
-  </li>
-</ul>
-<p>
-  <img
-    alt="image"
-    src="https://assets.leetcode.com/users/images/0eb8feba-cbfa-4f73-8d26-9aad226bdbc5_1626016093.9717174.png"
-  />
-</p>
+
 <pre>
 class MedianFinder {
 public:
@@ -185,37 +119,5 @@ public:
         if (maxHeap.size() > minHeap.size()) return maxHeap.top();
         return (maxHeap.top() + minHeap.top()) / 2.0;
     }
-};</pre
->
-
-<p><strong>Complexity</strong></p>
-<ul>
-  <li>Time:</li>
-  <li>Constructor: <code>O(1)</code></li>
-  <li>addNum: <code>O(logN)</code></li>
-  <li>findMedian: <code>O(1)</code></li>
-  <li>Space: <code>O(N)</code></li>
-</ul>
-<hr />
-<p><strong>✔️ Solution 2: SortedList</strong></p>
-<p>```python from sortedcontainers import SortedList class MedianFinder:</p>
-<pre><code>def __init__(self):
-    self.arr = SortedList()
-
-def addNum(self, num: int) -&gt; None:
-    self.arr.add(num)
-
-def findMedian(self) -&gt; float:
-    n = len(self.arr)
-    if n % 2 == 1:
-        return self.arr[n//2]
-    return (self.arr[n//2] + self.arr[n//2-1]) / 2
-</code></pre>
-<p>```</p>
-<p><strong>Complexity</strong></p>
-<ul>
-  <li>Time:</li>
-  <li>Constructor: <code>O(1)</code></li>
-  <li>addNum, findMedian: <code>O(logN)</code></li>
-  <li>Space: <code>O(N)</code></li>
-</ul>
+};
+</pre>

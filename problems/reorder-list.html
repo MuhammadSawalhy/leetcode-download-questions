@@ -57,3 +57,73 @@ L<sub>0</sub> &rarr; L<sub>n</sub> &rarr; L<sub>1</sub> &rarr; L<sub>n - 1</sub>
 </ul>
 
 <strong>Tags:</strong> Linked List, Two Pointers, Stack, Recursion
+
+<p><strong>Editorial:</strong></p>
+<p>
+  The problem asks us to reorder a linked list in a specific pattern. The key
+  idea is to split the list into two halves, reverse the second half, and then
+  merge the two halves in the desired order.
+</p>
+
+<ol>
+  <li>
+    Find the middle of the linked list using the slow and fast pointer approach.
+  </li>
+  <li>Reverse the second half of the linked list.</li>
+  <li>Merge the two halves by alternating nodes from each half.</li>
+</ol>
+
+<pre>
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public void reorderList(ListNode head) {
+        if (head == null || head.next == null) {
+            return;
+        }
+
+        // 1. Find middle
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        // 2. Reverse second half
+        ListNode prev = null;
+        ListNode curr = slow.next;
+        slow.next = null; // Break the list into two halves
+
+        while (curr != null) {
+            ListNode nextNode = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = nextNode;
+        }
+
+        // 3. Merge two halves
+        ListNode first = head;
+        ListNode second = prev;
+
+        while (second != null) {
+            ListNode temp1 = first.next;
+            ListNode temp2 = second.next;
+
+            first.next = second;
+            second.next = temp1;
+
+            first = temp1;
+            second = temp2;
+        }
+    }
+}
+</pre>

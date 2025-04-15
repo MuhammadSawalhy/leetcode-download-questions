@@ -25,10 +25,11 @@
   style="width: 200px; height: 190px"
 />
 <pre>
-<strong>Input:</strong> root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
-<strong>Output:</strong> 6
-<strong>Explanation:</strong> The LCA of nodes 2 and 8 is 6.
-</pre>
+ <strong>Input:</strong> root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
+ <strong>Output:</strong> 6
+ <strong>Explanation:</strong> The LCA of nodes 2 and 8 is 6.
+ </pre
+>
 
 <p><strong class="example">Example 2:</strong></p>
 <img
@@ -37,17 +38,19 @@
   style="width: 200px; height: 190px"
 />
 <pre>
-<strong>Input:</strong> root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4
-<strong>Output:</strong> 2
-<strong>Explanation:</strong> The LCA of nodes 2 and 4 is 2, since a node can be a descendant of itself according to the LCA definition.
-</pre>
+ <strong>Input:</strong> root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4
+ <strong>Output:</strong> 2
+ <strong>Explanation:</strong> The LCA of nodes 2 and 4 is 2, since a node can be a descendant of itself according to the LCA definition.
+ </pre
+>
 
 <p><strong class="example">Example 3:</strong></p>
 
 <pre>
-<strong>Input:</strong> root = [2,1], p = 2, q = 1
-<strong>Output:</strong> 2
-</pre>
+ <strong>Input:</strong> root = [2,1], p = 2, q = 1
+ <strong>Output:</strong> 2
+ </pre
+>
 
 <p>&nbsp;</p>
 <p><strong>Constraints:</strong></p>
@@ -66,3 +69,61 @@
 </ul>
 
 <strong>Tags:</strong> Tree, Depth-First Search, Binary Search Tree, Binary Tree
+
+<p><strong>Editorial</strong></p>
+
+<p>
+  The key property of a Binary Search Tree (BST) is that for any node, all nodes
+  in its left subtree have values less than the node's value, and all nodes in
+  its right subtree have values greater than the node's value. This property can
+  be exploited to efficiently find the Lowest Common Ancestor (LCA) of two
+  nodes.
+</p>
+
+<p><strong>Algorithm</strong></p>
+
+<p>
+  Starting from the root, we compare the values of nodes <code>p</code> and
+  <code>q</code> with the value of the current node. There are three possible
+  scenarios:
+</p>
+
+<ol>
+  <li>
+    If both <code>p</code> and <code>q</code> have values less than the current
+    node, then the LCA must be in the left subtree.
+  </li>
+  <li>
+    If both <code>p</code> and <code>q</code> have values greater than the
+    current node, then the LCA must be in the right subtree.
+  </li>
+  <li>
+    Otherwise, the current node is the LCA. This happens when <code>p</code> and
+    <code>q</code> are on different sides of the current node, or when the
+    current node is one of <code>p</code> or <code>q</code>.
+  </li>
+</ol>
+
+<p>
+  We can implement this logic iteratively or recursively. The iterative approach
+  is generally more efficient as it avoids the overhead of function calls.
+</p>
+
+<pre><code>
+ # Definition for a binary tree node.
+ # class TreeNode:
+ #     def __init__(self, x):
+ #         self.val = x
+ #         self.left = None
+ #         self.right = None
+
+ class Solution:
+  def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+   while root:
+    if p.val < root.val and q.val < root.val:
+     root = root.left
+    elif p.val > root.val and q.val > root.val:
+     root = root.right
+    else:
+     return root
+ </code></pre>

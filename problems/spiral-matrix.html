@@ -65,3 +65,87 @@
     single row to see if anything breaks or not.
   </li>
 </ul>
+
+<p><strong>Editorial:</strong></p>
+<p>
+  The problem requires traversing a given matrix in a spiral manner and
+  returning the elements in that order. The core idea is to simulate the spiral
+  traversal layer by layer. We maintain boundaries for the current layer (top,
+  bottom, left, right) and move along these boundaries in a clockwise direction.
+  After completing a layer, we shrink the boundaries to process the next inner
+  layer. The process continues until all elements are visited.
+</p>
+
+<p><strong>Algorithm:</strong></p>
+<ol>
+  <li>
+    Initialize the boundaries: <code>top = 0</code>,
+    <code>bottom = m - 1</code>, <code>left = 0</code>,
+    <code>right = n - 1</code>.
+  </li>
+  <li>
+    Iterate while <code>top <= bottom</code> and <code>left <= right</code>.
+  </li>
+  <li>Traverse from left to right along the top boundary.</li>
+  <li>Traverse from top to bottom along the right boundary.</li>
+  <li>
+    If <code>top <= bottom</code>, traverse from right to left along the bottom
+    boundary.
+  </li>
+  <li>
+    If <code>left <= right</code>, traverse from bottom to top along the left
+    boundary.
+  </li>
+  <li>
+    Update the boundaries: <code>top++</code>, <code>bottom--</code>,
+    <code>left++</code>, <code>right--</code>.
+  </li>
+</ol>
+
+<pre>
+<code>
+public class Solution {
+    public List&lt;Integer&gt; spiralOrder(int[][] matrix) {
+        List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+        if (matrix == null || matrix.length == 0) {
+            return result;
+        }
+
+        int top = 0, bottom = matrix.length - 1;
+        int left = 0, right = matrix[0].length - 1;
+
+        while (top <= bottom && left <= right) {
+            // Traverse from left to right
+            for (int i = left; i <= right; i++) {
+                result.add(matrix[top][i]);
+            }
+            top++;
+
+            // Traverse from top to bottom
+            for (int i = top; i <= bottom; i++) {
+                result.add(matrix[i][right]);
+            }
+            right--;
+
+            // Traverse from right to left
+            if (top <= bottom) {
+                for (int i = right; i >= left; i--) {
+                    result.add(matrix[bottom][i]);
+                }
+                bottom--;
+            }
+
+            // Traverse from bottom to top
+            if (left <= right) {
+                for (int i = bottom; i >= top; i--) {
+                    result.add(matrix[i][left]);
+                }
+                left++;
+            }
+        }
+
+        return result;
+    }
+}
+</code>
+</pre>

@@ -59,3 +59,74 @@
 </ul>
 
 <strong>Tags:</strong> Tree, Depth-First Search, Binary Search Tree, Binary Tree
+
+<p><strong>Editorial</strong></p>
+
+<p>
+  The problem asks us to validate whether a given binary tree is a valid binary
+  search tree (BST). The key property of a BST is that for each node, all nodes
+  in its left subtree must have values less than the node's value, and all nodes
+  in its right subtree must have values greater than the node's value. We can
+  use an inorder traversal to check this property.
+</p>
+
+<p><strong>Approach:</strong></p>
+
+<ol>
+  <li>
+    Use a recursive helper function that takes a node, a minimum bound, and a
+    maximum bound as input.
+  </li>
+  <li>
+    For each node, check if its value is within the bounds (min &lt; node.val
+    &lt; max). If not, return false.
+  </li>
+  <li>
+    Recursively call the helper function for the left subtree with the updated
+    maximum bound as the current node's value.
+  </li>
+  <li>
+    Recursively call the helper function for the right subtree with the updated
+    minimum bound as the current node's value.
+  </li>
+  <li>Return true if both subtrees are valid BSTs.</li>
+</ol>
+
+<pre>
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public boolean isValidBST(TreeNode root) {
+        return isValidBSTHelper(root, null, null);
+    }
+
+    private boolean isValidBSTHelper(TreeNode node, Integer min, Integer max) {
+        if (node == null) {
+            return true;
+        }
+
+        if (min != null && node.val <= min) {
+            return false;
+        }
+
+        if (max != null && node.val >= max) {
+            return false;
+        }
+
+        return isValidBSTHelper(node.left, min, node.val) && isValidBSTHelper(node.right, node.val, max);
+    }
+}
+</pre>

@@ -31,10 +31,11 @@
   style="width: 300px; height: 97px; margin-top: 8px; margin-bottom: 8px"
 />
 <pre>
-<strong>Input:</strong> head = [3,2,0,-4], pos = 1
-<strong>Output:</strong> true
-<strong>Explanation:</strong> There is a cycle in the linked list, where the tail connects to the 1st node (0-indexed).
-</pre>
+ <strong>Input:</strong> head = [3,2,0,-4], pos = 1
+ <strong>Output:</strong> true
+ <strong>Explanation:</strong> There is a cycle in the linked list, where the tail connects to the 1st node (0-indexed).
+ </pre
+>
 
 <p><strong class="example">Example 2:</strong></p>
 <img
@@ -43,10 +44,11 @@
   style="width: 141px; height: 74px"
 />
 <pre>
-<strong>Input:</strong> head = [1,2], pos = 0
-<strong>Output:</strong> true
-<strong>Explanation:</strong> There is a cycle in the linked list, where the tail connects to the 0th node.
-</pre>
+ <strong>Input:</strong> head = [1,2], pos = 0
+ <strong>Output:</strong> true
+ <strong>Explanation:</strong> There is a cycle in the linked list, where the tail connects to the 0th node.
+ </pre
+>
 
 <p><strong class="example">Example 3:</strong></p>
 <img
@@ -55,10 +57,11 @@
   style="width: 45px; height: 45px"
 />
 <pre>
-<strong>Input:</strong> head = [1], pos = -1
-<strong>Output:</strong> false
-<strong>Explanation:</strong> There is no cycle in the linked list.
-</pre>
+ <strong>Input:</strong> head = [1], pos = -1
+ <strong>Output:</strong> false
+ <strong>Explanation:</strong> There is no cycle in the linked list.
+ </pre
+>
 
 <p>&nbsp;</p>
 <p><strong>Constraints:</strong></p>
@@ -84,3 +87,78 @@
 </p>
 
 <strong>Tags:</strong> Hash Table, Linked List, Two Pointers
+
+<p><strong>Editorial:</strong></p>
+<p>
+  The problem asks us to determine if a given linked list has a cycle. A cycle
+  exists if, starting from the head, we can reach the same node again by
+  continuously following the <code>next</code> pointer.
+</p>
+
+<p>
+  The most efficient approach to solve this problem is using Floyd's Cycle
+  Finding Algorithm (also known as the "tortoise and hare" algorithm). This
+  algorithm uses two pointers, one moving slowly (one step at a time) and the
+  other moving faster (two steps at a time). If there is a cycle, the two
+  pointers will eventually meet.
+</p>
+
+<p><strong>Algorithm:</strong></p>
+<ol>
+  <li>
+    Initialize two pointers, <code>slow</code> and <code>fast</code>, both
+    pointing to the head of the linked list.
+  </li>
+  <li>
+    Move <code>slow</code> one step at a time (<code>slow = slow.next</code>).
+  </li>
+  <li>
+    Move <code>fast</code> two steps at a time (<code
+      >fast = fast.next.next</code
+    >).
+  </li>
+  <li>
+    If <code>fast</code> becomes <code>null</code> or
+    <code>fast.next</code> becomes <code>null</code>, it means there is no
+    cycle, so return <code>false</code>.
+  </li>
+  <li>
+    If <code>slow</code> and <code>fast</code> meet at any point, it means there
+    is a cycle, so return <code>true</code>.
+  </li>
+  <li>
+    Repeat steps 2-5 until either a cycle is found or the end of the list is
+    reached.
+  </li>
+</ol>
+
+<p>
+  This approach has a time complexity of O(N) and a space complexity of O(1),
+  where N is the number of nodes in the linked list.
+</p>
+
+<p><strong>Solution Code (Java):</strong></p>
+<pre>
+ public class Solution {
+  public boolean hasCycle(ListNode head) {
+   if (head == null || head.next == null) {
+    return false;
+   }
+
+   ListNode slow = head;
+   ListNode fast = head;
+
+   while (fast != null && fast.next != null) {
+    slow = slow.next;
+    fast = fast.next.next;
+
+    if (slow == fast) {
+     return true;
+    }
+   }
+
+   return false;
+  }
+ }
+ </pre
+>

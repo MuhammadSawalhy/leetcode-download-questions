@@ -2,16 +2,9 @@
 
 <h3>Statement</h3>
 
-<p>
-  Given an integer array <code>nums</code>, find a
-  <span data-keyword="subarray-nonempty">subarray</span> that has the largest
-  product, and return <em>the product</em>.
-</p>
+<p>Given an integer array <code>nums</code>, find a <span data-keyword="subarray-nonempty">subarray</span> that has the largest product, and return <em>the product</em>.</p>
 
-<p>
-  The test cases are generated so that the answer will fit in a
-  <strong>32-bit</strong> integer.
-</p>
+<p>The test cases are generated so that the answer will fit in a <strong>32-bit</strong> integer.</p>
 
 <p>&nbsp;</p>
 <p><strong class="example">Example 1:</strong></p>
@@ -34,14 +27,35 @@
 <p><strong>Constraints:</strong></p>
 
 <ul>
-  <li>
-    <code>1 &lt;= nums.length &lt;= 2 * 10<sup>4</sup></code>
-  </li>
-  <li><code>-10 &lt;= nums[i] &lt;= 10</code></li>
-  <li>
-    The product of any subarray of <code>nums</code> is
-    <strong>guaranteed</strong> to fit in a <strong>32-bit</strong> integer.
-  </li>
+	<li><code>1 &lt;= nums.length &lt;= 2 * 10<sup>4</sup></code></li>
+	<li><code>-10 &lt;= nums[i] &lt;= 10</code></li>
+	<li>The product of any subarray of <code>nums</code> is <strong>guaranteed</strong> to fit in a <strong>32-bit</strong> integer.</li>
 </ul>
 
 <strong>Tags:</strong> Array, Dynamic Programming
+
+<h3>Solution</h3>
+
+<p>The problem asks to find the maximum product of a subarray within a given array. The key idea is to maintain two variables: <code>max_so_far</code> and <code>min_so_far</code>. These variables track the maximum and minimum product ending at the current position. When encountering a negative number, the <code>max_so_far</code> and <code>min_so_far</code> are swapped because multiplying a negative number with the current minimum can result in a larger maximum. The overall maximum product is updated in each iteration.</p>
+
+<pre><code>class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        int max_so_far = nums[0];
+        int min_so_far = nums[0];
+        int result = nums[0];
+
+        for (int i = 1; i < nums.size(); i++) {
+            int curr = nums[i];
+            int temp_max = max({curr, max_so_far * curr, min_so_far * curr});
+            min_so_far = min({curr, max_so_far * curr, min_so_far * curr});
+
+            max_so_far = temp_max;
+
+            result = max(result, max_so_far);
+        }
+
+        return result;
+    }
+};
+</code></pre>

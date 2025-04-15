@@ -57,3 +57,49 @@ Note that different sequences are counted as different combinations.
 </p>
 
 <strong>Tags:</strong> Array, Dynamic Programming
+
+<h3>Editorial</h3>
+
+<p>
+  The problem asks for the number of combinations that sum up to the target.
+  Since different sequences are counted as different combinations, this is a
+  combination problem with repetition where order matters.
+</p>
+
+<p>
+  We can solve this using dynamic programming. Let <code>dp[i]</code> be the
+  number of combinations that sum up to <code>i</code>. Then, for each number
+  <code>num</code> in <code>nums</code>, we can update <code>dp[i]</code> by
+  adding <code>dp[i - num]</code> to it. The base case is
+  <code>dp[0] = 1</code>, since there is one way to sum up to 0 (by not picking
+  any numbers).
+</p>
+
+<p>
+  The follow-up question asks about negative numbers. If negative numbers are
+  allowed, the number of combinations can be infinite if we have both positive
+  and negative numbers because we can keep adding and subtracting them to reach
+  the target. To address this, we would need a constraint on the number of
+  elements allowed in a combination, limiting the depth of the recursion.
+</p>
+
+<h3>Solution</h3>
+
+<pre>
+class Solution {
+    public int combinationSum4(int[] nums, int target) {
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+
+        for (int i = 1; i <= target; i++) {
+            for (int num : nums) {
+                if (i >= num) {
+                    dp[i] += dp[i - num];
+                }
+            }
+        }
+
+        return dp[target];
+    }
+}
+</pre>

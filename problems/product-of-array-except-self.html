@@ -65,3 +65,39 @@
     input array to store intermediate results?
   </li>
 </ul>
+
+<h3>Editorial</h3>
+
+<p>
+  The core idea is to calculate prefix and suffix products. We can compute the
+  product of all elements to the left of each element and the product of all
+  elements to the right of each element. Then, the product of these two will
+  give us the desired result.
+</p>
+
+<h3>Solution</h3>
+
+<pre><code>
+class Solution {
+public:
+    vector&lt;int&gt; productExceptSelf(vector&lt;int&gt;&amp; nums) {
+        int n = nums.size();
+        vector&lt;int&gt; output(n);
+        output[0] = 1;
+
+        // Calculate prefix products
+        for (int i = 1; i &lt; n; i++) {
+            output[i] = output[i - 1] * nums[i - 1];
+        }
+
+        // Calculate suffix products and update output array
+        int right = 1;
+        for (int i = n - 1; i &gt;= 0; i--) {
+            output[i] *= right;
+            right *= nums[i];
+        }
+
+        return output;
+    }
+};
+</code></pre>

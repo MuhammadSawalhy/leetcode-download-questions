@@ -14,17 +14,12 @@
 <div class="example-block">
   <p>
     <strong>Input:</strong>
-    <span class="example-io"
-      >strs =
-      [&quot;eat&quot;,&quot;tea&quot;,&quot;tan&quot;,&quot;ate&quot;,&quot;nat&quot;,&quot;bat&quot;]</span
-    >
+    <span class="example-io">strs = ["eat","tea","tan","ate","nat","bat"]</span>
   </p>
 
   <p>
     <strong>Output:</strong>
-    <span class="example-io"
-      >[[&quot;bat&quot;],[&quot;nat&quot;,&quot;tan&quot;],[&quot;ate&quot;,&quot;eat&quot;,&quot;tea&quot;]]</span
-    >
+    <span class="example-io">[["bat"],["nat","tan"],["ate","eat","tea"]]</span>
   </p>
 
   <p><strong>Explanation:</strong></p>
@@ -32,17 +27,16 @@
   <ul>
     <li>
       There is no string in strs that can be rearranged to form
-      <code>&quot;bat&quot;</code>.
+      <code>"bat"</code>.
     </li>
     <li>
-      The strings <code>&quot;nat&quot;</code> and
-      <code>&quot;tan&quot;</code> are anagrams as they can be rearranged to
-      form each other.
+      The strings <code>"nat"</code> and <code>"tan"</code> are anagrams as they
+      can be rearranged to form each other.
     </li>
     <li>
-      The strings <code>&quot;ate&quot;</code>, <code>&quot;eat&quot;</code>,
-      and <code>&quot;tea&quot;</code> are anagrams as they can be rearranged to
-      form each other.
+      The strings <code>"ate"</code>, <code>"eat"</code>, and
+      <code>"tea"</code> are anagrams as they can be rearranged to form each
+      other.
     </li>
   </ul>
 </div>
@@ -50,27 +44,17 @@
 <p><strong class="example">Example 2:</strong></p>
 
 <div class="example-block">
-  <p>
-    <strong>Input:</strong>
-    <span class="example-io">strs = [&quot;&quot;]</span>
-  </p>
+  <p><strong>Input:</strong> <span class="example-io">strs = [""]</span></p>
 
-  <p>
-    <strong>Output:</strong> <span class="example-io">[[&quot;&quot;]]</span>
-  </p>
+  <p><strong>Output:</strong> <span class="example-io">[[""]]</span></p>
 </div>
 
 <p><strong class="example">Example 3:</strong></p>
 
 <div class="example-block">
-  <p>
-    <strong>Input:</strong>
-    <span class="example-io">strs = [&quot;a&quot;]</span>
-  </p>
+  <p><strong>Input:</strong> <span class="example-io">strs = ["a"]</span></p>
 
-  <p>
-    <strong>Output:</strong> <span class="example-io">[[&quot;a&quot;]]</span>
-  </p>
+  <p><strong>Output:</strong> <span class="example-io">[["a"]]</span></p>
 </div>
 
 <p>&nbsp;</p>
@@ -84,4 +68,29 @@
   <li><code>strs[i]</code> consists of lowercase English letters.</li>
 </ul>
 
-<strong>Tags:</strong> Array, Hash Table, String, Sorting
+<p><strong>Tags:</strong> Array, Hash Table, String, Sorting</p>
+
+<p><strong>Editorial:</strong></p>
+<p>
+  The key idea is to use a hash table to group anagrams together. Anagrams have
+  the same characters but in different orders. We can use a sorted string as the
+  key in the hash table.
+</p>
+
+<pre>
+ class Solution {
+  public List&lt;List&lt;String&gt;&gt; groupAnagrams(String[] strs) {
+   if (strs == null || strs.length == 0) return new ArrayList&lt;&gt;();
+   Map&lt;String, List&lt;String&gt;&gt; map = new HashMap&lt;&gt;();
+   for (String s : strs) {
+    char[] ca = s.toCharArray();
+    Arrays.sort(ca);
+    String key = String.valueOf(ca);
+    if (!map.containsKey(key)) map.put(key, new ArrayList&lt;&String&gt;());
+    map.get(key).add(s);
+   }
+   return new ArrayList&lt;&gt;(map.values());
+  }
+ }
+ </pre
+>

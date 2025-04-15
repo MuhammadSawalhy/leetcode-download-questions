@@ -58,3 +58,81 @@
 
 <strong>Tags:</strong> String, Tree, Depth-First Search, Breadth-First Search,
 Design, Binary Tree
+
+<p><strong>Editorial</strong></p>
+
+<p>
+  The problem asks us to serialize and deserialize a binary tree. Serialization
+  is converting the tree into a string representation, and deserialization is
+  building the tree back from the string.
+</p>
+
+<p>
+  A common approach is to use a pre-order traversal to serialize the tree. We
+  visit the root first, then the left subtree, and finally the right subtree. To
+  represent the absence of a node (null), we use a special marker (e.g., '#').
+  The nodes' values and the null markers are separated by a delimiter (e.g.,
+  ',').
+</p>
+
+<p>
+  For deserialization, we split the string by the delimiter to get a list of
+  nodes. We then use a recursive approach to build the tree. The first element
+  in the list is the root. We recursively build the left subtree and the right
+  subtree from the remaining elements.
+</p>
+
+<pre>
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+import java.util.*;
+
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        serializeHelper(root, sb);
+        return sb.toString();
+    }
+
+    private void serializeHelper(TreeNode root, StringBuilder sb) {
+        if (root == null) {
+            sb.append("#,");
+            return;
+        }
+        sb.append(root.val).append(",");
+        serializeHelper(root.left, sb);
+        serializeHelper(root.right, sb);
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        Queue&lt;String> nodes = new LinkedList&lt;>(Arrays.asList(data.split(",")));
+        return deserializeHelper(nodes);
+    }
+
+    private TreeNode deserializeHelper(Queue&lt;String> nodes) {
+        String val = nodes.poll();
+        if (val.equals("#")) {
+            return null;
+        }
+        TreeNode root = new TreeNode(Integer.parseInt(val));
+        root.left = deserializeHelper(nodes);
+        root.right = deserializeHelper(nodes);
+        return root;
+    }
+}
+
+// Your Codec object will be instantiated and called as such:
+// Codec ser = new Codec();
+// Codec deser = new Codec();
+// TreeNode ans = deser.deserialize(ser.serialize(root));
+</pre>

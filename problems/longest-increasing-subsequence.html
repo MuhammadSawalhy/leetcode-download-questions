@@ -50,3 +50,59 @@
 </p>
 
 <strong>Tags:</strong> Array, Binary Search, Dynamic Programming
+
+<p><strong>Editorial:</strong></p>
+<p>
+  The problem asks for the length of the longest increasing subsequence in a
+  given array. This can be solved using dynamic programming or a more efficient
+  approach using binary search.
+</p>
+
+<p><strong>Approach 1: Dynamic Programming</strong></p>
+<p>
+  We can define <code>dp[i]</code> as the length of the longest increasing
+  subsequence ending at index <code>i</code>. The recurrence relation is:
+  <code>dp[i] = max(dp[j] + 1)</code> for all <code>j &lt; i</code> and
+  <code>nums[j] &lt; nums[i]</code>. If no such <code>j</code> exists, then
+  <code>dp[i] = 1</code>. The answer is the maximum value in the
+  <code>dp</code> array.
+</p>
+
+<p><strong>Approach 2: Binary Search</strong></p>
+<p>
+  Maintain an array <code>tails</code>, where <code>tails[i]</code> is the
+  smallest tail of all increasing subsequences with length <code>i+1</code>. For
+  each number in the input array, we try to extend the longest increasing
+  subsequence we have so far. If the current number is larger than all tails, it
+  extends the longest increasing subsequence by one. Otherwise, we can find the
+  smallest tail that is greater than or equal to the current number using binary
+  search and replace that tail with the current number. The length of the
+  <code>tails</code> array is the length of the longest increasing subsequence.
+</p>
+
+<pre>
+<code>
+import java.util.Arrays;
+
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] tails = new int[nums.length];
+        int size = 0;
+        for (int num : nums) {
+            int i = 0, j = size;
+            while (i != j) {
+                int m = (i + j) / 2;
+                if (tails[m] < num)
+                    i = m + 1;
+                else
+                    j = m;
+            }
+            tails[i] = num;
+            if (i == size)
+                size++;
+        }
+        return size;
+    }
+}
+</code>
+</pre>

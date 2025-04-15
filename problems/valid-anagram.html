@@ -52,4 +52,34 @@
   would you adapt your solution to such a case?
 </p>
 
-<strong>Tags:</strong> Hash Table, String, Sorting
+<h4>Solution</h4>
+<p>
+  One approach to solve this problem is to use a hash table (or an array in this
+  case, since we know the characters are lowercase English letters) to count the
+  frequency of each character in both strings. If the frequencies are the same,
+  then the strings are anagrams.
+</p>
+
+<pre>
+ function isAnagram(s, t) {
+  if (s.length !== t.length) {
+   return false;
+  }
+
+  const charCounts = new Array(26).fill(0);
+
+  for (let i = 0; i < s.length; i++) {
+   charCounts[s.charCodeAt(i) - 'a'.charCodeAt(0)]++;
+   charCounts[t.charCodeAt(i) - 'a'.charCodeAt(0)]--;
+  }
+
+  for (let count of charCounts) {
+   if (count !== 0) {
+    return false;
+   }
+  }
+
+  return true;
+ }
+ </pre
+>

@@ -53,3 +53,53 @@
 <ul>
   <li>Maintain two pointers and update one with a delay of n steps.</li>
 </ul>
+
+<h3>Solution</h3>
+
+<p>
+  The key idea is to use two pointers, <code>slow</code> and <code>fast</code>.
+  The <code>fast</code> pointer is advanced <code>n</code> steps ahead of the
+  <code>slow</code> pointer. Then, both pointers move forward until the
+  <code>fast</code> pointer reaches the end of the list. At this point, the
+  <code>slow</code> pointer will be pointing to the node just before the node
+  that needs to be removed.
+</p>
+
+<pre>
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode* dummy = new ListNode(0);
+        dummy->next = head;
+        ListNode* slow = dummy;
+        ListNode* fast = dummy;
+
+        // Advance fast pointer by n steps
+        for (int i = 0; i <= n; i++) {
+            if (fast == nullptr) return head; // Handle cases where n is larger than list size
+            fast = fast->next;
+        }
+
+        // Move both pointers until fast reaches the end
+        while (fast != nullptr) {
+            slow = slow->next;
+            fast = fast->next;
+        }
+
+        // Remove the nth node from the end
+        slow->next = slow->next->next;
+
+        return dummy->next;
+    }
+};
+</pre>

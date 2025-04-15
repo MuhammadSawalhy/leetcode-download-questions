@@ -68,3 +68,28 @@
 <p>&nbsp;</p>
 <strong>Follow up:</strong> If this function is called many times, how would you
 optimize it? <strong>Tags:</strong> Divide and Conquer, Bit Manipulation
+
+<p><strong>Editorial</strong></p>
+<p>
+  The problem requires counting the number of set bits (1s) in the binary
+  representation of a given integer. A simple approach is to iterate through the
+  bits of the integer and increment a counter for each bit that is set. A more
+  efficient approach involves bit manipulation. The expression
+  <code>n &amp; (n - 1)</code> clears the least significant bit of
+  <code>n</code>. By repeatedly applying this operation until
+  <code>n</code> becomes 0, we can count the number of set bits.
+</p>
+
+<pre><code>
+public class Solution {
+    // you need to treat n as an unsigned value
+    public int hammingWeight(int n) {
+        int count = 0;
+        while (n != 0) {
+            n &= (n - 1);
+            count++;
+        }
+        return count;
+    }
+}
+</code></pre>

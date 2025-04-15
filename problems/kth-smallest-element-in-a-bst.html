@@ -19,9 +19,10 @@
   style="width: 212px; height: 301px"
 />
 <pre>
-<strong>Input:</strong> root = [3,1,4,null,2], k = 1
-<strong>Output:</strong> 1
-</pre>
+ <strong>Input:</strong> root = [3,1,4,null,2], k = 1
+ <strong>Output:</strong> 1
+ </pre
+>
 
 <p><strong class="example">Example 2:</strong></p>
 <img
@@ -30,9 +31,10 @@
   style="width: 382px; height: 302px"
 />
 <pre>
-<strong>Input:</strong> root = [5,3,6,2,4,null,null,1], k = 3
-<strong>Output:</strong> 3
-</pre>
+ <strong>Input:</strong> root = [5,3,6,2,4,null,null,1], k = 3
+ <strong>Output:</strong> 3
+ </pre
+>
 
 <p>&nbsp;</p>
 <p><strong>Constraints:</strong></p>
@@ -64,3 +66,30 @@
   <li>What if you could modify the BST node's structure?</li>
   <li>The optimal runtime complexity is O(height of BST).</li>
 </ul>
+
+<h3>Solution</h3>
+
+<p>
+  The most intuitive approach is to perform an in-order traversal of the BST.
+  Since in-order traversal visits nodes in ascending order for a BST, the k-th
+  node visited during the traversal will be the k-th smallest element.
+</p>
+
+<pre>
+ # Definition for a binary tree node.
+ # class TreeNode:
+ #     def __init__(self, val=0, left=None, right=None):
+ #         self.val = val
+ #         self.left = left
+ #         self.right = right
+ class Solution:
+  def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+  def inorder(node):
+  if not node:
+  return []
+  return inorder(node.left) + [node.val] + inorder(node.right)
+
+  sorted_list = inorder(root)
+  return sorted_list[k-1]
+ </pre
+>

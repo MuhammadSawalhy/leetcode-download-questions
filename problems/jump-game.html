@@ -43,3 +43,29 @@
 </ul>
 
 <strong>Tags:</strong> Array, Dynamic Programming, Greedy
+
+<h3>Solution</h3>
+
+<p>
+  The problem can be solved using a greedy approach. Iterate through the array,
+  keeping track of the furthest index that can be reached. If at any point the
+  current index is beyond the furthest reachable index, it means we cannot reach
+  the end.
+</p>
+
+<pre>
+<code>
+class Solution {
+    public boolean canJump(int[] nums) {
+        int reachable = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (i > reachable) {
+                return false;
+            }
+            reachable = Math.max(reachable, i + nums[i]);
+        }
+        return true;
+    }
+}
+</code>
+</pre>

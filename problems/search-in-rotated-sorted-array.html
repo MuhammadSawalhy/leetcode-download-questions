@@ -61,3 +61,27 @@
 </ul>
 
 <strong>Tags:</strong> Array, Binary Search
+
+<pre><code>
+class Solution {
+public:
+    int search(vector&lt;int>& nums, int target) {
+        int lo = 0, hi = nums.size();
+        while (lo &lt; hi) {
+            int mid = (lo + hi) / 2;
+
+            double num = (nums[mid] &lt; nums[0]) == (target &lt; nums[0])
+                       ? nums[mid]
+                       : target &lt; nums[0] ? -INFINITY : INFINITY;
+
+            if (num &lt; target)
+                lo = mid + 1;
+            else if (num > target)
+                hi = mid;
+            else
+                return mid;
+        }
+        return -1;
+    }
+};
+</code></pre>

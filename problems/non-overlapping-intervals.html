@@ -59,3 +59,47 @@
 </ul>
 
 <strong>Tags:</strong> Array, Dynamic Programming, Greedy, Sorting
+
+<p><strong>Editorial</strong></p>
+<p>
+  The problem asks for the minimum number of intervals to remove such that the
+  remaining intervals are non-overlapping. This is equivalent to finding the
+  maximum number of non-overlapping intervals. We can use a greedy approach to
+  solve this problem.
+</p>
+<p>
+  First, sort the intervals by their end times. Then, iterate through the sorted
+  intervals, keeping track of the end time of the last non-overlapping interval
+  we've selected. If the current interval's start time is greater than or equal
+  to the end time of the last selected interval, then the current interval is
+  non-overlapping with the previously selected intervals. We select it and
+  update the end time of the last selected interval.
+</p>
+<p>
+  The number of intervals to remove is then the total number of intervals minus
+  the maximum number of non-overlapping intervals we found.
+</p>
+
+<pre><code>
+class Solution {
+    public int eraseOverlapIntervals(int[][] intervals) {
+        if (intervals == null || intervals.length == 0) {
+            return 0;
+        }
+
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[1], b[1]));
+
+        int count = 1;
+        int end = intervals[0][1];
+
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] >= end) {
+                count++;
+                end = intervals[i][1];
+            }
+        }
+
+        return intervals.length - count;
+    }
+}
+</code></pre>

@@ -114,4 +114,48 @@
   <li><code>s</code> contains only digits and may contain leading zero(s).</li>
 </ul>
 
-<strong>Tags:</strong> String, Dynamic Programming
+<p><strong>Tags:</strong> String, Dynamic Programming</p>
+
+<p>Editorial:</p>
+
+<p>
+  The problem can be solved using dynamic programming. Let <code>dp[i]</code> be
+  the number of ways to decode the first <code>i</code> characters of the string
+  <code>s</code>. The base cases are: <code>dp[0] = 1</code> (empty string has
+  one way to decode) <code>dp[1] = 1</code> if <code>s[0] != '0'</code> else
+  <code>0</code>
+
+  For <code>i > 1</code>, we have two cases: 1. If <code>s[i-1] != '0'</code>,
+  then we can decode the last character separately. In this case,
+  <code>dp[i] += dp[i-1]</code>. 2. If <code>s[i-2:i]</code> is between
+  <code>10</code> and <code>26</code> (inclusive), then we can decode the last
+  two characters together. In this case, <code>dp[i] += dp[i-2]</code>. Finally,
+  we return <code>dp[n]</code>, where <code>n</code> is the length of the string
+  <code>s</code>.
+</p>
+
+<pre><code>
+class Solution {
+    public int numDecodings(String s) {
+        int n = s.length();
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = (s.charAt(0) == '0') ? 0 : 1;
+
+        for (int i = 2; i <= n; i++) {
+            int oneDigit = Integer.parseInt(s.substring(i - 1, i));
+            int twoDigits = Integer.parseInt(s.substring(i - 2, i));
+
+            if (oneDigit >= 1 && oneDigit <= 9) {
+                dp[i] += dp[i - 1];
+            }
+
+            if (twoDigits >= 10 && twoDigits <= 26) {
+                dp[i] += dp[i - 2];
+            }
+        }
+
+        return dp[n];
+    }
+}
+</code></pre>

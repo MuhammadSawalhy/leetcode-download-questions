@@ -2,11 +2,7 @@
 
 <h3>Statement</h3>
 
-<p>
-  Given an integer array <code>nums</code>, find the
-  <span data-keyword="subarray-nonempty">subarray</span> with the largest sum,
-  and return <em>its sum</em>.
-</p>
+<p>Given an integer array <code>nums</code>, find the <span data-keyword="subarray-nonempty">subarray</span> with the largest sum, and return <em>its sum</em>.</p>
 
 <p>&nbsp;</p>
 <p><strong class="example">Example 1:</strong></p>
@@ -37,19 +33,34 @@
 <p><strong>Constraints:</strong></p>
 
 <ul>
-  <li>
-    <code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code>
-  </li>
-  <li>
-    <code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code>
-  </li>
+	<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>
+	<li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>
 </ul>
 
 <p>&nbsp;</p>
-<p>
-  <strong>Follow up:</strong> If you have figured out the
-  <code>O(n)</code> solution, try coding another solution using the
-  <strong>divide and conquer</strong> approach, which is more subtle.
-</p>
+<p><strong>Follow up:</strong> If you have figured out the <code>O(n)</code> solution, try coding another solution using the <strong>divide and conquer</strong> approach, which is more subtle.</p>
 
 <strong>Tags:</strong> Array, Divide and Conquer, Dynamic Programming
+
+<h3>Editorial</h3>
+
+<p>The problem asks to find the maximum sum of a contiguous subarray within a given array.  A dynamic programming approach, specifically Kadane's Algorithm, provides an efficient O(n) solution.  The idea is to iterate through the array, keeping track of the current maximum sum ending at each position and the overall maximum sum seen so far.  If the current maximum sum becomes negative, reset it to 0, effectively starting a new subarray.
+
+<h3>Solution</h3>
+
+<pre>
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int maxSum = nums[0];
+        int currentSum = nums[0];
+
+        for (int i = 1; i < nums.size(); i++) {
+            currentSum = max(nums[i], currentSum + nums[i]);
+            maxSum = max(maxSum, currentSum);
+        }
+
+        return maxSum;
+    }
+};
+</pre>

@@ -85,3 +85,80 @@ Since the largest window of s only has one &#39;a&#39;, return empty string.
     Continue expanding the right and left pointers until you reach the end of s.
   </li>
 </ul>
+
+<h3>Editorial</h3>
+
+<p>
+  The problem asks us to find the smallest substring of <code>s</code> that
+  contains all characters of <code>t</code>. A sliding window approach is
+  suitable here.
+</p>
+
+<p>
+  We maintain two pointers, <code>left</code> and <code>right</code>,
+  representing the boundaries of our window. We expand the
+  <code>right</code> pointer until the window contains all characters of
+  <code>t</code>. Then, we try to shrink the window from the
+  <code>left</code> while still maintaining the condition that the window
+  contains all characters of <code>t</code>. We keep track of the minimum window
+  size found so far.
+</p>
+
+<p>
+  A hash map can be used to store the frequency of characters in
+  <code>t</code> and another hash map to store the frequency of characters in
+  the current window. When the frequency of a character in the window is greater
+  than or equal to its frequency in <code>t</code>, we consider that character
+  to be "covered".
+</p>
+
+<h3>Solution</h3>
+
+<pre>
+class Solution {
+    public String minWindow(String s, String t) {
+        if (s == null || t == null || s.length() == 0 || t.length() == 0) {
+            return "";
+        }
+
+        int[] need = new int[128];
+        int[] have = new int[128];
+
+        for (int i = 0; i < t.length(); i++) {
+            need[t.charAt(i)]++;
+        }
+
+        int left = 0, right = 0;
+        int minLeft = 0, minLen = Integer.MAX_VALUE;
+        int count = 0;
+
+        while (right < s.length()) {
+            char c = s.charAt(right);
+            have[c]++;
+
+            if (need[c] > 0 && have[c] <= need[c]) {
+                count++;
+            }
+
+            while (count == t.length()) {
+                if (right - left + 1 < minLen) {
+                    minLen = right - left + 1;
+                    minLeft = left;
+                }
+
+                char leftChar = s.charAt(left);
+                have[leftChar]--;
+
+                if (need[leftChar] > 0 && have[leftChar] < need[leftChar]) {
+                    count--;
+                }
+
+                left++;
+            }
+            right++;
+        }
+
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(minLeft, minLeft + minLen);
+    }
+}
+</pre>

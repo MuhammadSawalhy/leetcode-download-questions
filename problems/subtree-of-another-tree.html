@@ -81,3 +81,56 @@ Hash Function
     isIdentical(s.left,t.left) AND isIdentical(s.right,t.right)
   </li>
 </ul>
+
+<h3>Solution</h3>
+
+<p>
+  The problem asks us to determine if a tree <code>subRoot</code> is a subtree
+  of another tree <code>root</code>. We can solve this problem using recursion.
+  We define a helper function <code>isIdentical</code> to check if two trees are
+  identical. The main function <code>isSubtree</code> will recursively traverse
+  the <code>root</code> tree, and for each node, it checks if the subtree rooted
+  at that node is identical to the <code>subRoot</code> tree.
+</p>
+
+<pre>
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public boolean isSubtree(TreeNode root, TreeNode subRoot) {
+        if (root == null) {
+            return false;
+        }
+        if (isIdentical(root, subRoot)) {
+            return true;
+        }
+        return isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot);
+    }
+
+    private boolean isIdentical(TreeNode root1, TreeNode root2) {
+        if (root1 == null && root2 == null) {
+            return true;
+        }
+        if (root1 == null || root2 == null) {
+            return false;
+        }
+        if (root1.val != root2.val) {
+            return false;
+        }
+        return isIdentical(root1.left, root2.left) && isIdentical(root1.right, root2.right);
+    }
+}
+</pre>

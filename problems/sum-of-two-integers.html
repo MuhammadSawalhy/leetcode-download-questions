@@ -25,3 +25,26 @@
 </ul>
 
 <strong>Tags:</strong> Math, Bit Manipulation
+
+<h3>Solution</h3>
+
+<p>
+  The key idea is to use bitwise operators to simulate addition. The
+  <code>&amp;</code> operator can be used to find the carry bits, and the
+  <code>^</code> operator can be used to find the sum bits (without carry). We
+  then shift the carry bits one position to the left (<code>&lt;&lt; 1</code>)
+  and repeat the process until there are no more carry bits.
+</p>
+
+<pre>
+public class Solution {
+    public int getSum(int a, int b) {
+        while (b != 0) {
+            int carry = a & b;
+            a = a ^ b;
+            b = carry << 1;
+        }
+        return a;
+    }
+}
+</pre>

@@ -61,3 +61,32 @@
 </ul>
 
 <strong>Tags:</strong> Array, Hash Table, Sorting
+
+<h3>Editorial</h3>
+
+<p>
+  The core idea to solve this problem efficiently is to use a hash set. A hash
+  set allows us to check for the presence of an element in O(1) time on average.
+  We iterate through the array, and for each element, we check if it's already
+  in the hash set. If it is, we've found a duplicate and return true. If not, we
+  add the element to the hash set and continue. If we reach the end of the array
+  without finding any duplicates, we return false.
+</p>
+
+<h3>Solution</h3>
+
+<pre><code>
+class Solution {
+public:
+    bool containsDuplicate(vector&lt;int&gt;&amp; nums) {
+        unordered_set&lt;int&gt; seen;
+        for (int num : nums) {
+            if (seen.count(num) > 0) {
+                return true;
+            }
+            seen.insert(num);
+        }
+        return false;
+    }
+};
+</code></pre>

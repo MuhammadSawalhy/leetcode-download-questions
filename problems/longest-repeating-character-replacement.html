@@ -47,3 +47,52 @@ There may exists other ways to achieve this answer too.</pre>
 </ul>
 
 <strong>Tags:</strong> Hash Table, String, Sliding Window
+
+<p><strong>Editorial:</strong></p>
+<p>
+  The problem asks us to find the longest substring with at most
+  <code>k</code> replacements to make all characters in the substring the same.
+  We can use a sliding window approach to solve this problem efficiently.
+</p>
+
+<p>
+  The main idea is to maintain a window and expand it to the right. We keep
+  track of the frequency of each character in the window. If the number of
+  replacements needed (window size minus the frequency of the most frequent
+  character) is greater than <code>k</code>, we shrink the window from the left
+  until the condition is met.
+</p>
+
+<p>
+  We maintain a variable to store the maximum length of the valid substring
+  found so far and update it whenever the window expands. The time complexity of
+  this approach is O(n), where n is the length of the string.
+</p>
+
+<p><strong>Solution:</strong></p>
+<pre>
+<code>
+class Solution {
+    public int characterReplacement(String s, int k) {
+        int[] freq = new int[26];
+        int maxLength = 0;
+        int maxFreq = 0;
+        int start = 0;
+
+        for (int end = 0; end < s.length(); end++) {
+            freq[s.charAt(end) - 'A']++;
+            maxFreq = Math.max(maxFreq, freq[s.charAt(end) - 'A']);
+
+            while (end - start + 1 - maxFreq > k) {
+                freq[s.charAt(start) - 'A']--;
+                start++;
+            }
+
+            maxLength = Math.max(maxLength, end - start + 1);
+        }
+
+        return maxLength;
+    }
+}
+</code>
+</pre>

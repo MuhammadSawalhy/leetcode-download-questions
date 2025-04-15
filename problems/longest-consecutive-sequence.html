@@ -2,14 +2,9 @@
 
 <h3>Statement</h3>
 
-<p>
-  Given an unsorted array of integers <code>nums</code>, return
-  <em>the length of the longest consecutive elements sequence.</em>
-</p>
+<p>Given an unsorted array of integers <code>nums</code>, return <em>the length of the longest consecutive elements sequence.</em></p>
 
-<p>
-  You must write an algorithm that runs in&nbsp;<code>O(n)</code>&nbsp;time.
-</p>
+<p>You must write an algorithm that runs in&nbsp;<code>O(n)</code>&nbsp;time.</p>
 
 <p>&nbsp;</p>
 <p><strong class="example">Example 1:</strong></p>
@@ -38,12 +33,39 @@
 <p><strong>Constraints:</strong></p>
 
 <ul>
-  <li>
-    <code>0 &lt;= nums.length &lt;= 10<sup>5</sup></code>
-  </li>
-  <li>
-    <code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code>
-  </li>
+	<li><code>0 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>
+	<li><code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code></li>
 </ul>
 
-<strong>Tags:</strong> Array, Hash Table, Union Find
+<pre>
+class Solution {
+    public int longestConsecutive(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+
+        Set<Integer> numSet = new HashSet<>();
+        for (int num : nums) {
+            numSet.add(num);
+        }
+
+        int longestStreak = 0;
+
+        for (int num : nums) {
+            if (!numSet.contains(num - 1)) {
+                int currentNum = num;
+                int currentStreak = 1;
+
+                while (numSet.contains(currentNum + 1)) {
+                    currentNum += 1;
+                    currentStreak += 1;
+                }
+
+                longestStreak = Math.max(longestStreak, currentStreak);
+            }
+        }
+
+        return longestStreak;
+    }
+}
+</pre>

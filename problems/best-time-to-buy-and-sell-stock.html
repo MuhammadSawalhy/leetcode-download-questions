@@ -50,166 +50,39 @@ Note that buying on day 2 and selling on day 1 is not allowed because you must b
 
 <strong>Tags:</strong> Array, Dynamic Programming
 
-<h3>Solution Summary</h3>
-
-Intuition The problem aims to find the maximum profit that can be obtained by
-buying and selling a stock. The given solution seems to follow a simple approach
 <h3>Solution</h3>
 
-<h2>Intuition</h2>
 <p>
-  The problem aims to find the maximum profit that can be obtained by buying and
-  selling a stock. The given solution seems to follow a simple approach of
-  iterating through the prices, keeping track of the minimum buying price, and
-  updating the profit whenever a higher selling price is encountered.
+  The problem can be solved by keeping track of the minimum price seen so far
+  and the maximum profit that can be achieved. Iterate through the prices array,
+  updating the minimum price if a smaller price is encountered. Calculate the
+  profit by subtracting the minimum price from the current price. Update the
+  maximum profit if the calculated profit is greater than the current maximum
+  profit.
 </p>
-<p>
-  <img
-    alt="image.png"
-    src="https://assets.leetcode.com/users/images/c82e3ed3-2b69-48f7-aff2-3df8e0696db9_1710429502.6036055.png"
-  />
-</p>
-<h2>Approach</h2>
-<ol>
-  <li>
-    Initialize variables <code>buy</code> with the first element of the prices
-    array and <code>profit</code> as 0.
-  </li>
-  <li>Iterate through the prices starting from the second element.</li>
-  <li>
-    Update the <code>buy</code> variable if the current price is lower than the
-    current buying price.
-  </li>
-  <li>
-    Update the <code>profit</code> if the difference between the current price
-    and the buying price is greater than the current profit.
-  </li>
-  <li>Return the final profit.</li>
-</ol>
-<h2>Kadane's Algorithm</h2>
-<p>
-  Kadane's Algorithm is a dynamic programming technique used to find the maximum
-  subarray sum in an array of numbers. The algorithm maintains two variables:
-  <code>max_current</code> represents the maximum sum ending at the current
-  position, and <code>max_global</code> represents the maximum subarray sum
-  encountered so far. At each iteration, it updates <code>max_current</code> to
-  include the current element or start a new subarray if the current element is
-  larger than the accumulated sum. The <code>max_global</code> is updated if
-  <code>max_current</code> surpasses its value.
-</p>
-<h2>Relating with the Approach</h2>
-<p>
-  In the provided approach for finding the maximum profit in stock prices, the
-  algorithm can be seen as a variation of Kadane's Algorithm. Instead of finding
-  the maximum subarray sum directly, it focuses on finding the maximum positive
-  difference between consecutive elements (prices) in the array.
-</p>
-<p>Here's how the approach relates to Kadane's Algorithm:</p>
-<ol>
-  <li>
-    <p><strong>Initialization:</strong></p>
-  </li>
-  <li>
-    <p>
-      In Kadane's Algorithm, <code>max_current</code> and
-      <code>max_global</code> are initialized to the first element of the array.
-    </p>
-  </li>
-  <li>
-    <p>
-      In the stock profit approach, <code>buy</code> is initialized with the
-      first element of the prices array, and <code>profit</code> is initialized
-      to 0.
-    </p>
-  </li>
-  <li>
-    <p><strong>Iteration:</strong></p>
-  </li>
-  <li>
-    <p>
-      Kadane's Algorithm iterates through the array, updating
-      <code>max_current</code> based on the current element's value and deciding
-      whether to start a new subarray.
-    </p>
-  </li>
-  <li>
-    <p>
-      The stock profit approach iterates through the prices array, updating
-      <code>buy</code> when a lower price is encountered and treating the
-      difference between the current price and <code>buy</code> as a potential
-      profit.
-    </p>
-  </li>
-  <li>
-    <p><strong>Comparison and Update:</strong></p>
-  </li>
-  <li>
-    <p>
-      Kadane's Algorithm compares and updates <code>max_current</code> and
-      <code>max_global</code> at each iteration.
-    </p>
-  </li>
-  <li>
-    The stock profit approach compares and updates <code>profit</code> whenever
-    a positive difference between the current price and <code>buy</code> exceeds
-    the current profit.
-  </li>
-</ol>
-<h2>Complexity</h2>
+
+<p><strong>Complexity</strong></p>
+
 <ul>
+  <li>Time complexity: O(n), where n is the length of the prices array.</li>
   <li>
-    Time complexity: $O(n)$, where $n$ is the length of the prices array. The
-    algorithm iterates through the array once.
-  </li>
-  <li>
-    Space complexity: $O(1)$, as only a constant amount of extra space is used.
+    Space complexity: O(1), as only a constant amount of extra space is used.
   </li>
 </ul>
-<h2>Code</h2>
-<p>
-  <code
-    >java [] class Solution { public int maxProfit(int[] prices) { int buy =
-    prices[0]; int profit = 0; for (int i = 1; i &lt; prices.length; i++) { if
-    (prices[i] &lt; buy) { buy = prices[i]; } else if (prices[i] - buy &gt;
-    profit) { profit = prices[i] - buy; } } return profit; } }</code
-  >
-</p>
-<p>
-  <code
-    >c++ [] class Solution { public: int maxProfit(std::vector&lt;int&gt;&amp;
-    prices) { int buy = prices[0]; int profit = 0; for (int i = 1; i &lt;
-    prices.size(); i++) { if (prices[i] &lt; buy) { buy = prices[i]; } else if
-    (prices[i] - buy &gt; profit) { profit = prices[i] - buy; } } return profit;
-    } };</code
-  >
-</p>
-<p>
-  <code
-    >python [] class Solution: def maxProfit(self, prices): buy = prices[0]
-    profit = 0 for i in range(1, len(prices)): if prices[i] &lt; buy: buy =
-    prices[i] elif prices[i] - buy &gt; profit: profit = prices[i] - buy return
-    profit</code
-  >
-</p>
-<p>
-  <code
-    >rust [] impl Solution { pub fn max_profit(prices: Vec&lt;i32&gt;) -&gt; i32
-    { let mut buy = prices[0]; let mut profit = 0; for i in 1..prices.len() { if
-    prices[i] &lt; buy { buy = prices[i]; } else if prices[i] - buy &gt; profit
-    { profit = prices[i] - buy; } } profit } }</code
-  >
-</p>
-<p>
-  <code
-    >javascript [] class Solution { maxProfit(prices) { let buy = prices[0]; let
-    profit = 0; for (let i = 1; i &lt; prices.length; i++) { if (prices[i] &lt;
-    buy) { buy = prices[i]; } else if (prices[i] - buy &gt; profit) { profit =
-    prices[i] - buy; } } return profit; } }</code
-  >
-</p>
-<p>
-  <img
-    alt="3 upvote.png"
-    src="https://assets.leetcode.com/users/images/61340855-1311-4dfa-8baa-7588848a6316_1710321564.2869911.png"
-  />
-</p>
+
+<pre><code>
+class Solution {
+ public int maxProfit(int[] prices) {
+  int buy = prices[0];
+  int profit = 0;
+  for (int i = 1; i < prices.length; i++) {
+   if (prices[i] < buy) {
+    buy = prices[i];
+   } else if (prices[i] - buy > profit) {
+    profit = prices[i] - buy;
+   }
+  }
+  return profit;
+ }
+}
+</code></pre>

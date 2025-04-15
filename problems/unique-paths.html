@@ -54,3 +54,47 @@
 </ul>
 
 <strong>Tags:</strong> Math, Dynamic Programming, Combinatorics
+<br />
+<br />
+<b>Editorial</b>
+<br />
+The problem asks for the number of unique paths a robot can take from the
+top-left corner to the bottom-right corner of an m x n grid, given that the
+robot can only move down or right. This is a classic dynamic programming
+problem. The key idea is to realize that the number of ways to reach a cell (i,
+j) is the sum of the number of ways to reach the cell above it (i-1, j) and the
+number of ways to reach the cell to its left (i, j-1). This is because the robot
+can only come from these two directions. We can create a 2D array dp of size m x
+n to store the number of ways to reach each cell. The base cases are the first
+row and the first column, where the number of ways to reach each cell is 1
+(since the robot can only move right or down, respectively). Then, we can
+iterate through the rest of the grid, filling in the dp array using the
+recurrence relation: dp[i][j] = dp[i-1][j] + dp[i][j-1] Finally, the number of
+unique paths to reach the bottom-right corner is dp[m-1][n-1].
+
+<pre>
+<code>
+public class Solution {
+    public int uniquePaths(int m, int n) {
+        int[][] dp = new int[m][n];
+
+        // Initialize the first row and first column to 1
+        for (int i = 0; i < m; i++) {
+            dp[i][0] = 1;
+        }
+        for (int j = 0; j < n; j++) {
+            dp[0][j] = 1;
+        }
+
+        // Calculate the number of paths for each cell
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+
+        return dp[m - 1][n - 1];
+    }
+}
+</code>
+</pre>

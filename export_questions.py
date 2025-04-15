@@ -8,6 +8,12 @@ from types import SimpleNamespace
 import markdown
 from joblib import Memory
 import mdformat
+from dotenv import load_dotenv
+import google.generativeai as genai
+
+load_dotenv()
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-2.0-flash")
 
 # Define the cache directory
 cache_dir = ".cache"
@@ -209,10 +215,51 @@ def get_problem_content(problem_link):
     return body_content, x.title, slug
 
 
-def save_problem_to_file(problem_content, title, slug):
+def fix_problem_content_with_LLM(content: str):
+    prompt = "\n".join(
+        [
+            'This is the HTML of a problem from LeetCode and it may have a solution at the end of it, if it has a solution refine it and make it short and concise, remove any content in the solution outside the problem context like "please upvote" (this may be an image that tells people to upvote, remove it)',
+            "fix the format and the syntax, if the code is written in multiple languages keep only one instance of one of the languages",
+            'don\'t say "here is" at the beginning or at the end, only provide the output as html code so I can copy paste directly',
+            "if there is no solution, solve the problem your self and add the editorial and the solution code at the end"
+            "dont't use markdown syntax, for example use <pre> for code blocks",
+            "----------------------------------------",
+            content,
+        ]
+    )
+    # client = OpenAI(
+    #     api_key=os.getenv("DEEPSEEK_API_KEY"), base_url="https://api.deepseek.com"
+    # )
+    # response = client.chat.completions.create(
+    #     model="deepseek-chat",
+    #     messages=[
+    #         {"role": "system", "content": "You are a helpful assistant"},
+    #         {
+    #             "role": "user",
+    #             "content": prompt,
+    #         },
+    #     ],
+    #     stream=False,
+    # )
+    # return response.choices[0].message.content
+    print("✨ Using the LLM to finetune the result")
+    response = model.generate_content(prompt)
+    x = response.text
+    if x[0] == "`":
+        x = "\n".join(x.split("\n")[1:-1])
+    return x
+
+
+def save_problem_to_file(problem_content, title, slug, use_llm):
     """Save problem content to an individual file"""
     if not problem_content:
         return False
+
+    problem_content = problem_content.replace("</br>", "<br/>")
+
+    # NOTE: Remove this line if you don't want the LLM to make the final refinements
+    if use_llm:
+        problem_content = fix_problem_content_with_LLM(problem_content)
 
     # Create a safe filename from the title
     safe_filename = f"{slug}.html"
@@ -221,11 +268,11 @@ def save_problem_to_file(problem_content, title, slug):
     with open(filepath, "w") as f:
         f.write(problem_content)
 
-    print(f"Saved problem '{title}' to {filepath}")
+    print(f"✅ Saved problem '{title}' to {filepath}")
     return True
 
 
-def concatenate_problem_files(output_file="blind_75.html", include_sections=True):
+def concatenate_problem_files(output_file="output.html", include_sections=True):
     """Concatenate all HTML problem files into a single file"""
     combined_content = ""
 
@@ -331,13 +378,19 @@ def main():
     )
     parser.add_argument(
         "--output",
-        default="blind_75.html",
-        help="Output file for concatenation (default: blind_75.html)",
+        default="output.html",
+        help="Output file for concatenation (default: output.html)",
     )
     parser.add_argument(
         "--force",
         action="store_true",
         help="Force generation of all the problems even previous genereted ones",
+    )
+    parser.add_argument(
+        "--llm",
+        type=lambda x: x.lower() in ["true", "1", "yes"],
+        default=True,
+        help="Use LLMs to finetune the result? (true/false)",
     )
 
     args = parser.parse_args()
@@ -348,7 +401,7 @@ def main():
         content, title, slug = get_problem_content(args.link)
         if content:
             content = process_content(content)
-            save_problem_to_file(content, title, slug)
+            save_problem_to_file(content, title, slug, args.llm)
         else:
             print("Failed to fetch problem content.")
 
@@ -378,7 +431,7 @@ def main():
                         content, title, slug = get_problem_content(line)
                         if content:
                             content = process_content(content)
-                            save_problem_to_file(content, title, slug)
+                            save_problem_to_file(content, title, slug, args.llm)
                     print("------------------------------")
                 except Exception as e:
                     print(f"Error processing line {line}: {e}", file=sys.stderr)

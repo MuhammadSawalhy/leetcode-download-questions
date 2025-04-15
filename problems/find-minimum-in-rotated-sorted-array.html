@@ -2,28 +2,16 @@
 
 <h3>Statement</h3>
 
-<p>
-  Suppose an array of length <code>n</code> sorted in ascending order is
-  <strong>rotated</strong> between <code>1</code> and <code>n</code> times. For
-  example, the array <code>nums = [0,1,2,4,5,6,7]</code> might become:
-</p>
+<p>Suppose an array of length <code>n</code> sorted in ascending order is <strong>rotated</strong> between <code>1</code> and <code>n</code> times. For example, the array <code>nums = [0,1,2,4,5,6,7]</code> might become:</p>
 
 <ul>
-  <li><code>[4,5,6,7,0,1,2]</code> if it was rotated <code>4</code> times.</li>
-  <li><code>[0,1,2,4,5,6,7]</code> if it was rotated <code>7</code> times.</li>
+	<li><code>[4,5,6,7,0,1,2]</code> if it was rotated <code>4</code> times.</li>
+	<li><code>[0,1,2,4,5,6,7]</code> if it was rotated <code>7</code> times.</li>
 </ul>
 
-<p>
-  Notice that <strong>rotating</strong> an array
-  <code>[a[0], a[1], a[2], ..., a[n-1]]</code> 1 time results in the array
-  <code>[a[n-1], a[0], a[1], a[2], ..., a[n-2]]</code>.
-</p>
+<p>Notice that <strong>rotating</strong> an array <code>[a[0], a[1], a[2], ..., a[n-1]]</code> 1 time results in the array <code>[a[n-1], a[0], a[1], a[2], ..., a[n-2]]</code>.</p>
 
-<p>
-  Given the sorted rotated array <code>nums</code> of
-  <strong>unique</strong> elements, return
-  <em>the minimum element of this array</em>.
-</p>
+<p>Given the sorted rotated array <code>nums</code> of <strong>unique</strong> elements, return <em>the minimum element of this array</em>.</p>
 
 <p>You must write an algorithm that runs in&nbsp;<code>O(log n) time</code>.</p>
 
@@ -56,41 +44,71 @@
 <p><strong>Constraints:</strong></p>
 
 <ul>
-  <li><code>n == nums.length</code></li>
-  <li><code>1 &lt;= n &lt;= 5000</code></li>
-  <li><code>-5000 &lt;= nums[i] &lt;= 5000</code></li>
-  <li>All the integers of <code>nums</code> are <strong>unique</strong>.</li>
-  <li>
-    <code>nums</code> is sorted and rotated between <code>1</code> and
-    <code>n</code> times.
-  </li>
+	<li><code>n == nums.length</code></li>
+	<li><code>1 &lt;= n &lt;= 5000</code></li>
+	<li><code>-5000 &lt;= nums[i] &lt;= 5000</code></li>
+	<li>All the integers of <code>nums</code> are <strong>unique</strong>.</li>
+	<li><code>nums</code> is sorted and rotated between <code>1</code> and <code>n</code> times.</li>
 </ul>
 
 <strong>Tags:</strong> Array, Binary Search
 
+
 <h3>Hints</h3>
 
 <ul>
-  <li>
-    Array was originally in ascending order. Now that the array is rotated,
-    there would be a point in the array where there is a small deflection from
-    the increasing sequence. eg. The array would be something like [4, 5, 6, 7,
-    0, 1, 2].
-  </li>
-  <li>
-    You can divide the search space into two and see which direction to go. Can
-    you think of an algorithm which has O(logN) search complexity?
-  </li>
-  <li>
-    <ol>
-      <li>
-        All the elements to the left of inflection point > first element of the
-        array.
-      </li>
-      <li>
-        All the elements to the right of inflection point < first element of the
-        array.
-      </li>
-    </ol>
-  </li>
+<li>Array was originally in ascending order. Now that the array is rotated, there would be a point in the array where there is a small deflection from the increasing sequence. eg. The array would be something like [4, 5, 6, 7, 0, 1, 2].</li>
+<li>You can divide the search space into two and see which direction to go.
+Can you think of an algorithm which has O(logN) search complexity?</li>
+<li><ol>
+<li>All the elements to the left of inflection point > first element of the array.</li>
+<li>All the elements to the right of inflection point < first element of the array.</li>
+<ol></li>
 </ul>
+
+<h3>Editorial</h3>
+
+<h4>Summary</h4>
+<p>The key idea is to use binary search to find the rotation point (pivot) in the array. The rotation point is the index where the element is greater than its next element. Once we find the rotation point, the minimum element is the next element of the rotation point.</p>
+
+<h4>Algorithm</h4>
+<ol>
+<li>Initialize <code>left = 0</code> and <code>right = n - 1</code>.</li>
+<li>While <code>left < right</code>:
+    <ol>
+        <li>Calculate <code>mid = left + (right - left) / 2</code>.</li>
+        <li>If <code>nums[mid] > nums[right]</code>, then the rotation point is to the right of <code>mid</code>, so update <code>left = mid + 1</code>.</li>
+        <li>Else, the rotation point is either <code>mid</code> or to the left of <code>mid</code>, so update <code>right = mid</code>.</li>
+    </ol>
+</li>
+<li>The minimum element is <code>nums[left]</code>.</li>
+</ol>
+
+<h4>Complexity</h4>
+<ul>
+<li>Time complexity: O(log n) because we are using binary search.</li>
+<li>Space complexity: O(1) because we are using constant extra space.</li>
+</ul>
+
+<h3>Solution</h3>
+
+<pre>
+class Solution {
+    public int findMin(int[] nums) {
+        int left = 0;
+        int right = nums.length - 1;
+
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+
+            if (nums[mid] > nums[right]) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+
+        return nums[left];
+    }
+}
+</pre>

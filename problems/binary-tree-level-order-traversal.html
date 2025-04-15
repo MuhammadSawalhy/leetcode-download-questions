@@ -51,3 +51,88 @@
 <ul>
   <li>Use a queue to perform BFS.</li>
 </ul>
+
+<h3>Solution</h3>
+
+<p>
+  The problem asks us to traverse a binary tree level by level. This can be
+  efficiently solved using Breadth-First Search (BFS). We use a queue to store
+  the nodes at each level and process them one level at a time.
+</p>
+
+<p><strong>Algorithm:</strong></p>
+
+<ol>
+  <li>Initialize an empty queue and add the root node to it.</li>
+  <li>Initialize an empty list to store the level order traversal.</li>
+  <li>While the queue is not empty:</li>
+  <ol>
+    <li>Get the number of nodes at the current level.</li>
+    <li>
+      Initialize an empty list to store the values of the nodes at the current
+      level.
+    </li>
+    <li>Iterate through the nodes at the current level:</li>
+    <ol>
+      <li>Dequeue a node from the queue.</li>
+      <li>Add the node's value to the current level's list.</li>
+      <li>Enqueue the node's left and right children (if they exist).</li>
+    </ol>
+    <li>Add the current level's list to the level order traversal list.</li>
+  </ol>
+  <li>Return the level order traversal list.</li>
+</ol>
+
+<pre>
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
+class Solution {
+    public List&lt;List&lt;Integer&gt;&gt; levelOrder(TreeNode root) {
+        List&lt;List&lt;Integer&gt;&gt; result = new ArrayList&lt;&gt;();
+        if (root == null) {
+            return result;
+        }
+
+        Queue&lt;TreeNode&gt; queue = new LinkedList&lt;&gt;();
+        queue.offer(root);
+
+        while (!queue.isEmpty()) {
+            int levelSize = queue.size();
+            List&lt;Integer&gt; currentLevel = new ArrayList&lt;&gt;();
+
+            for (int i = 0; i &lt; levelSize; i++) {
+                TreeNode node = queue.poll();
+                currentLevel.add(node.val);
+
+                if (node.left != null) {
+                    queue.offer(node.left);
+                }
+                if (node.right != null) {
+                    queue.offer(node.right);
+                }
+            }
+            result.add(currentLevel);
+        }
+
+        return result;
+    }
+}
+</pre>

@@ -18,26 +18,28 @@
 <p><strong class="example">Example 1:</strong></p>
 
 <pre>
-<strong>Input:</strong> grid = [
-  [&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;0&quot;],
-  [&quot;1&quot;,&quot;1&quot;,&quot;0&quot;,&quot;1&quot;,&quot;0&quot;],
-  [&quot;1&quot;,&quot;1&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],
-  [&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;]
-]
-<strong>Output:</strong> 1
-</pre>
+ <strong>Input:</strong> grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+ ]
+ <strong>Output:</strong> 1
+ </pre
+>
 
 <p><strong class="example">Example 2:</strong></p>
 
 <pre>
-<strong>Input:</strong> grid = [
-  [&quot;1&quot;,&quot;1&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],
-  [&quot;1&quot;,&quot;1&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],
-  [&quot;0&quot;,&quot;0&quot;,&quot;1&quot;,&quot;0&quot;,&quot;0&quot;],
-  [&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;1&quot;,&quot;1&quot;]
-]
-<strong>Output:</strong> 3
-</pre>
+ <strong>Input:</strong> grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+ ]
+ <strong>Output:</strong> 3
+ </pre
+>
 
 <p>&nbsp;</p>
 <p><strong>Constraints:</strong></p>
@@ -52,5 +54,57 @@
   </li>
 </ul>
 
-<strong>Tags:</strong> Array, Depth-First Search, Breadth-First Search, Union
-Find, Matrix
+<h3>Editorial</h3>
+
+<p>
+  The problem asks us to find the number of connected components (islands) in a
+  2D grid. We can solve this using Depth-First Search (DFS). The main idea is to
+  iterate through each cell in the grid. If a cell is land ('1'), we increment
+  the island count and then use DFS to "sink" the entire island by marking all
+  connected land cells as visited (e.g., by changing them to '0').
+</p>
+
+<h3>Solution</h3>
+
+<pre>
+ class Solution {
+  public int numIslands(char[][] grid) {
+   if (grid == null || grid.length == 0) {
+    return 0;
+   }
+
+   int numRows = grid.length;
+   int numCols = grid[0].length;
+   int numIslands = 0;
+
+   for (int i = 0; i < numRows; i++) {
+    for (int j = 0; j < numCols; j++) {
+     if (grid[i][j] == '1') {
+      numIslands++;
+      dfs(grid, i, j);
+     }
+    }
+   }
+
+   return numIslands;
+  }
+
+  private void dfs(char[][] grid, int row, int col) {
+   int numRows = grid.length;
+   int numCols = grid[0].length;
+
+   if (row < 0 || row >= numRows || col < 0 || col >= numCols || grid[row][col] == '0') {
+    return;
+   }
+
+   grid[row][col] = '0'; // Mark as visited
+
+   // Explore adjacent cells
+   dfs(grid, row + 1, col);
+   dfs(grid, row - 1, col);
+   dfs(grid, row, col + 1);
+   dfs(grid, row, col - 1);
+  }
+ }
+ </pre
+>

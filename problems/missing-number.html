@@ -60,38 +60,6 @@
   </p>
 </div>
 
-<div class="simple-translate-system-theme" id="simple-translate">
-  <div>
-    <div
-      class="simple-translate-button isShow"
-      style="
-        background-image: url(&quot;moz-extension://8a9ffb6b-7e69-4e93-aae1-436a1448eff6/icons/512.png&quot;);
-        height: 22px;
-        width: 22px;
-        top: 318px;
-        left: 36px;
-      "
-    >
-      &nbsp;
-    </div>
-
-    <div
-      class="simple-translate-panel"
-      style="width: 300px; height: 200px; top: 0px; left: 0px; font-size: 13px"
-    >
-      <div class="simple-translate-result-wrapper" style="overflow: hidden">
-        <div class="simple-translate-move" draggable="true">&nbsp;</div>
-
-        <div class="simple-translate-result-contents">
-          <p class="simple-translate-result" dir="auto">&nbsp;</p>
-
-          <p class="simple-translate-candidate" dir="auto">&nbsp;</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <p>&nbsp;</p>
 <p><strong>Constraints:</strong></p>
 
@@ -113,3 +81,33 @@
 
 <strong>Tags:</strong> Array, Hash Table, Math, Binary Search, Bit Manipulation,
 Sorting
+<p>&nbsp;</p>
+
+<h3>Editorial</h3>
+<p>
+  The problem asks us to find the missing number in an array of n distinct
+  numbers in the range [0, n]. We can solve this problem using several
+  approaches, including using a hash set, sorting, or mathematical formulas.
+</p>
+
+<p>
+  One of the most efficient solutions is to use the sum formula. The sum of
+  numbers from 0 to n is given by n * (n + 1) / 2. We can calculate the actual
+  sum of the numbers in the input array and then subtract this sum from the
+  expected sum to find the missing number. This approach has O(n) time
+  complexity and O(1) space complexity, satisfying the follow-up question.
+</p>
+
+<pre><code>
+class Solution {
+    public int missingNumber(int[] nums) {
+        int n = nums.length;
+        int expectedSum = n * (n + 1) / 2;
+        int actualSum = 0;
+        for (int num : nums) {
+            actualSum += num;
+        }
+        return expectedSum - actualSum;
+    }
+}
+</code></pre>

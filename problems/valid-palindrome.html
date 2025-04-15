@@ -52,3 +52,48 @@ Since an empty string reads the same forward and backward, it is a palindrome.
 </ul>
 
 <strong>Tags:</strong> Two Pointers, String
+
+<h3>Solution</h3>
+
+<p>
+  The problem asks us to determine if a given string is a palindrome after
+  preprocessing. Preprocessing involves converting all uppercase letters to
+  lowercase and removing all non-alphanumeric characters. After preprocessing,
+  we need to check if the string reads the same forward and backward.
+</p>
+
+<p>
+  A straightforward approach is to use two pointers, one starting from the
+  beginning of the string and the other from the end. We move the pointers
+  towards each other, comparing the characters at each pointer. If the
+  characters are different, the string is not a palindrome. If the pointers
+  meet, the string is a palindrome.
+</p>
+
+<pre>
+<code>
+class Solution {
+    public boolean isPalindrome(String s) {
+        s = s.toLowerCase();
+        StringBuilder sb = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            if (Character.isLetterOrDigit(c)) {
+                sb.append(c);
+            }
+        }
+        String filteredString = sb.toString();
+        int left = 0;
+        int right = filteredString.length() - 1;
+
+        while (left < right) {
+            if (filteredString.charAt(left) != filteredString.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+}
+</code>
+</pre>

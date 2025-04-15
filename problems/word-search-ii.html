@@ -21,9 +21,10 @@
   style="width: 322px; height: 322px"
 />
 <pre>
-<strong>Input:</strong> board = [[&quot;o&quot;,&quot;a&quot;,&quot;a&quot;,&quot;n&quot;],[&quot;e&quot;,&quot;t&quot;,&quot;a&quot;,&quot;e&quot;],[&quot;i&quot;,&quot;h&quot;,&quot;k&quot;,&quot;r&quot;],[&quot;i&quot;,&quot;f&quot;,&quot;l&quot;,&quot;v&quot;]], words = [&quot;oath&quot;,&quot;pea&quot;,&quot;eat&quot;,&quot;rain&quot;]
-<strong>Output:</strong> [&quot;eat&quot;,&quot;oath&quot;]
-</pre>
+ <strong>Input:</strong> board = [[&quot;o&quot;,&quot;a&quot;,&quot;a&quot;,&quot;n&quot;],[&quot;e&quot;,&quot;t&quot;,&quot;a&quot;,&quot;e&quot;],[&quot;i&quot;,&quot;h&quot;,&quot;k&quot;,&quot;r&quot;],[&quot;i&quot;,&quot;f&quot;,&quot;l&quot;,&quot;v&quot;]], words = [&quot;oath&quot;,&quot;pea&quot;,&quot;eat&quot;,&quot;rain&quot;]
+ <strong>Output:</strong> [&quot;eat&quot;,&quot;oath&quot;]
+ </pre
+>
 
 <p><strong class="example">Example 2:</strong></p>
 <img
@@ -32,9 +33,10 @@
   style="width: 162px; height: 162px"
 />
 <pre>
-<strong>Input:</strong> board = [[&quot;a&quot;,&quot;b&quot;],[&quot;c&quot;,&quot;d&quot;]], words = [&quot;abcb&quot;]
-<strong>Output:</strong> []
-</pre>
+ <strong>Input:</strong> board = [[&quot;a&quot;,&quot;b&quot;],[&quot;c&quot;,&quot;d&quot;]], words = [&quot;abcb&quot;]
+ <strong>Output:</strong> []
+ </pre
+>
 
 <p>&nbsp;</p>
 <p><strong>Constraints:</strong></p>
@@ -73,3 +75,69 @@
     first.
   </li>
 </ul>
+
+<p><strong>Editorial:</strong></p>
+<p>
+  The key idea is to use Trie to store the words and then use DFS to search the
+  board.
+</p>
+<p>1. Build a Trie from the words.</p>
+<p>2. For each cell in the board, start a DFS search.</p>
+<p>
+  3. In the DFS search, check if the current prefix is in the Trie. If not,
+  return.
+</p>
+<p>4. If the current word is in the Trie, add it to the result.</p>
+<p>5. Backtrack the DFS search.</p>
+
+<pre><code>
+ class TrieNode:
+  def __init__(self):
+  self.children = {}
+  self.word = None
+
+ class Trie:
+  def __init__(self):
+  self.root = TrieNode()
+
+  def insert(self, word):
+  node = self.root
+  for char in word:
+  if char not in node.children:
+  node.children[char] = TrieNode()
+  node = node.children[char]
+  node.word = word
+
+ class Solution:
+  def findWords(self, board, words):
+  trie = Trie()
+  for word in words:
+  trie.insert(word)
+
+  rows, cols = len(board), len(board[0])
+  result = set()
+
+  def dfs(row, col, node):
+  if row &lt; 0 or row &gt;= rows or col &lt; 0 or col &gt;= cols or board[row][col] not in node.children:
+  return
+
+  char = board[row][col]
+  node = node.children[char]
+
+  if node.word:
+  result.add(node.word)
+  node.word = None  # Prevent duplicates
+
+  board[row][col] = '#'  # Mark as visited
+  dfs(row + 1, col, node)
+  dfs(row - 1, col, node)
+  dfs(row, col + 1, node)
+  dfs(row, col - 1, node)
+  board[row][col] = char  # Backtrack
+
+  for row in range(rows):
+  for col in range(cols):
+  dfs(row, col, trie.root)
+
+  return list(result)
+ </code></pre>

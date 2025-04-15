@@ -52,3 +52,54 @@
 </p>
 
 <strong>Tags:</strong> Linked List, Recursion
+
+<p><strong>Solution:</strong></p>
+
+<p><strong>Iterative Approach:</strong></p>
+<p>
+  The iterative approach involves traversing the linked list and changing the
+  <code>next</code> pointer of each node to point to the previous node. We need
+  to maintain three pointers: <code>prev</code>, <code>current</code>, and
+  <code>next</code>.
+</p>
+
+<pre>
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def reverseList(head):
+    prev = None
+    current = head
+    while current:
+        next_node = current.next
+        current.next = prev
+        prev = current
+        current = next_node
+    return prev
+</pre>
+
+<p><strong>Recursive Approach:</strong></p>
+
+<p>
+  The recursive approach involves reversing the list starting from the next node
+  and then making the current node point to the previous node.
+</p>
+
+<pre>
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def reverseListRecursive(head):
+    if not head or not head.next:
+        return head
+    
+    new_head = reverseListRecursive(head.next)
+    head.next.next = head
+    head.next = None
+    
+    return new_head
+</pre>

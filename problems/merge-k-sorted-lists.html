@@ -63,3 +63,72 @@ merging them into one sorted list:
 
 <strong>Tags:</strong> Linked List, Divide and Conquer, Heap (Priority Queue),
 Merge Sort
+
+<p><strong>Editorial:</strong></p>
+
+<p>
+  The problem asks us to merge k sorted linked lists into one sorted linked
+  list. A straightforward approach would be to iterate through all the linked
+  lists and collect all the nodes' values into an array, sort the array, and
+  then create a new linked list from the sorted array. However, this approach
+  has a time complexity of O(N log N), where N is the total number of nodes in
+  all linked lists, due to the sorting step.
+</p>
+
+<p>
+  A more efficient approach is to use a min-heap (priority queue). We can insert
+  the head nodes of all k linked lists into the min-heap. Then, we repeatedly
+  extract the minimum node from the heap, add it to the merged list, and insert
+  the next node from the same list into the heap. This approach has a time
+  complexity of O(N log k), where N is the total number of nodes and k is the
+  number of linked lists.
+</p>
+
+<p>
+  Another approach is to use the divide and conquer strategy. We can merge the k
+  linked lists pairwise. For example, we can merge the first two lists, then
+  merge the third and fourth lists, and so on. Then, we merge the resulting
+  lists recursively until we have only one merged list. This approach also has a
+  time complexity of O(N log k).
+</p>
+
+<pre>
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+import java.util.PriorityQueue;
+
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        PriorityQueue&lt;ListNode&gt; pq = new PriorityQueue&lt;&gt;((a, b) -&gt; a.val - b.val);
+
+        for (ListNode list : lists) {
+            if (list != null) {
+                pq.offer(list);
+            }
+        }
+
+        ListNode dummy = new ListNode(0);
+        ListNode tail = dummy;
+
+        while (!pq.isEmpty()) {
+            ListNode curr = pq.poll();
+            tail.next = curr;
+            tail = tail.next;
+
+            if (curr.next != null) {
+                pq.offer(curr.next);
+            }
+        }
+
+        return dummy.next;
+    }
+}
+</pre>

@@ -57,3 +57,51 @@ Notice that the answer must be a substring, &quot;pwke&quot; is a subsequence an
     and keep updating maxLen accordingly.
   </li>
 </ul>
+
+<h3>Editorial</h3>
+
+<p>
+  The problem asks us to find the longest substring without repeating
+  characters. A brute-force approach would be to generate all possible
+  substrings and check each one for repeating characters. This would have a time
+  complexity of O(n^3), where n is the length of the string.
+</p>
+
+<p>
+  A more efficient approach is to use a sliding window. We maintain a window of
+  characters that are all unique. We can use a set or a map to keep track of the
+  characters in the current window. We expand the window by one character at a
+  time. If the new character is already in the window, we shrink the window from
+  the left until the duplicate character is removed. The maximum size of the
+  window at any point is the length of the longest substring without repeating
+  characters. This approach has a time complexity of O(n), where n is the length
+  of the string.
+</p>
+
+<h3>Solution</h3>
+<pre>
+<code>
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int n = s.length();
+        int maxLength = 0;
+        int start = 0;
+        int end = 0;
+        HashSet&lt;Character&gt; charSet = new HashSet&lt;&gt;();
+
+        while (start &lt; n && end &lt; n) {
+            if (!charSet.contains(s.charAt(end))) {
+                charSet.add(s.charAt(end));
+                end++;
+                maxLength = Math.max(maxLength, end - start);
+            } else {
+                charSet.remove(s.charAt(start));
+                start++;
+            }
+        }
+
+        return maxLength;
+    }
+}
+</code>
+</pre>
