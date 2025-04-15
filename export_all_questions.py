@@ -3,16 +3,22 @@ import sys, os
 import requests
 import json
 from types import SimpleNamespace
-import html2text
+import markdown
 from joblib import Memory
 import mdformat
 
+html_content = """
+<!DOCTYPE html>  
+<html>
+    <body>BODY_CONTENT</body>
+</html>"""
 
-markdown_content = ""
+body_content = ""
 
 graphQLEndpoint = "https://leetcode.com/graphql"
 questionGQL = open("graphql/question.gql").read()
 officialSolutionGQL = open("graphql/official_solution.gql").read()
+solutionGQL = open("graphql/solution.gql").read()
 playgroundGQL = open("graphql/playground.gql").read()
 
 # Define the cache directory
@@ -62,52 +68,88 @@ def fetch_playground(uuid: str):
     return x
 
 
-def get_section(section_text):
-    global markdown_content
-    markdown_content += f"\n# {section_text[1:]}\n\n"
+@memory.cache
+def fetch_solution(topicId: str):
+    baseJSON = {
+        "variables": {"topicId": topicId},
+        "query": solutionGQL,
+    }
+
+    resp = requests.get(graphQLEndpoint, json=baseJSON)
+    x = json.loads(resp.text, object_hook=lambda d: SimpleNamespace(**d))
+    return x
 
 
 def get_question(question_link):
-    slug = question_link.split("https://leetcode.com/problems/", 1)[1]
-    if not slug:
+    slug = re.search(r"(?<=problems/)[^/]+", question_link)
+    if slug:
+        slug = slug.group(0)
+    else:
         print(f"Invalid link: {question_link}", file=sys.stderr)
         return
 
+    topicId = re.search(r"(?<=solutions/)[^/]+", question_link)
+    if topicId:
+        topicId = topicId.group(0)
+
     x = fetch_question(slug).data.question
 
-    global markdown_content
-    markdown_content += f"\n## {x.title}\n\n"
-    markdown_content += f"### Statement\n\n"
-    # replace <sub> with \textsuperscript and also <sup>
-    content = re.sub(r"<sub>(.*?)</sub>", r"\\textsuperscript{\1}", x.content)
-    content = re.sub(r"<sup>(.*?)</sup>", r"\\textsuperscript{\1}", content)
-    markdown_content += html2text.html2text(content)
+    global body_content
+    body_content += f"\n<h2>{x.title}</h2>\n\n"
+    body_content += f"<h3>Statement</h3>\n\n"
+    body_content += x.content
 
     # Add tags
     if x.topicTags:
         tags = ", ".join([topic.name for topic in x.topicTags])
-        markdown_content += f"\n**Tags:** {tags}\n\n"
+        body_content += f"\n<strong>Tags:</strong> {tags}\n\n"
 
     sol = ""
     if x.hints:
-        sol += "\n### Hints\n\n"
+        sol += "\n<h3>Hints</h3>\n\n"
+        sol += "<ul>\n"
         for hint in x.hints:
-            sol += f"- {hint}\n"
+            sol += f"<li>{hint}</li>\n"
+        sol += "</ul>\n"
 
+    y = None
     if x.solution.canSeeDetail:
         y = fetch_official_solution(slug).data.ugcArticleOfficialSolutionArticle
+    elif topicId:
+        y = fetch_solution(topicId).data.ugcArticleSolutionArticle
+
+    if y:
         if y.summary:
-            sol += "\n### Solution Summary\n\n"
-            sol += html2text.html2text(y.summary)
+            sol += "\n<h3>Solution Summary</h3>\n\n"
+            summary = y.summary
+            if y.isSerialized:
+                summary = bytes(summary, "utf-8").decode("unicode_escape")
+            sol += summary
         content = y.content
-        # increase the level of the headings
-        content = re.sub(
-            r"^(#+)", lambda m: "#" * (len(m.group(0)) + 1), content, flags=re.M
+        truncate_with = "## Solution Article"
+        if truncate_with in content:
+            i = content.index(truncate_with) + len(truncate_with)
+            content = content[i:]
+        if y.isSerialized:
+            # replace all escaped characters with unescaped one
+            content = bytes(content, "utf-8").decode("unicode_escape")
+        content = mdformat.text(content)
+        content = markdown.markdown(content)
+        # Replace relative links with absolute links
+        content = content.replace(
+            "../Figures", f"https://leetcode.com/problems/{slug}/Figures"
         )
-        sol += content[content.index("### Solution Article") :]
+        # Increase the level of the headings
+        content = re.sub(
+            r"<h([1-5])>",
+            lambda m: "<h" + str(len(m.group(0)) + 1) + ">",
+            content,
+        )
+        sol += "\n<h3>Solution</h3>\n\n"
+        sol += content
 
     if sol:
-        markdown_content += sol
+        body_content += sol
 
 
 def replace_iframes_with_code(markdown_content):
@@ -118,29 +160,34 @@ def replace_iframes_with_code(markdown_content):
 
     def iframe_replacer(match):
         iframe_tag = match.group(0)
-        uuid_match = re.search(r'name="([^"]+)"', iframe_tag)
+        uuid_match = re.search(r'src="([^"]+)"', iframe_tag)
         if not uuid_match:
             return iframe_tag  # Return the original iframe if no UUID is found
-        uuid = uuid_match.group(1)
+        playground_link = uuid_match.group(1)
+        uuid = re.search(r"playground/([^/]+)", playground_link)
+        if not uuid:
+            print("No UUID found in playground link:", playground_link, file=sys.stderr)
+            return iframe_tag
+        uuid = uuid.group(1)
         try:
             playground_data = fetch_playground(uuid).data
             for x in playground_data.allPlaygroundCodes:
                 if x.langSlug == "cpp":
-                    return f"```cpp\n{x.code}\n```"
+                    return f"<pre>\n{x.code}</pre>"
             if playground_data.allPlaygroundCodes:
                 playground_data.allPlaygroundCodes[0]
-                return f"```{x.langSlug}\n{x.code}\n```"
+                return f"<pre>{x.langSlug}\n{x.code}</pre>"
         except Exception as e:
             print(f"Error fetching playground for UUID {uuid}: {e}", file=sys.stderr)
         return iframe_tag  # Return the original iframe if an error occurs
 
     # Replace all iframe tags with the corresponding C++ code
-    return re.sub(
-        r'<iframe[^>]*name="[^"]+"[^>]*></iframe>', iframe_replacer, markdown_content
-    )
+    return re.sub(r"<iframe[^>]*></iframe>", iframe_replacer, markdown_content)
 
 
 def main():
+    global html_content, body_content
+
     with open("question_links.txt") as f:
         links = f.read()
     question_links = links.split("\n")
@@ -150,7 +197,7 @@ def main():
             continue
         try:
             if line[0] == "~":
-                get_section(line)
+                body_content += f"\n<h1>{line[1:]}</h1>\n\n"
             else:
                 print(f"Fetching the problem: {line}")
                 get_question(line)
@@ -159,19 +206,14 @@ def main():
             print(f"Error processing line {line}: {e}", file=sys.stderr)
             continue
 
-    global markdown_content
     # Replace all $$expr$$ into $expr$
-    markdown_content = re.sub(r"\$\$(.*?)\$\$", r"$\1$", markdown_content)
+    body_content = re.sub(r"\$\$(.*?)\$\$", r"$\1$", body_content)
     # Replace iframes with C++ code
-    markdown_content = replace_iframes_with_code(markdown_content)
-    # Save the final markdown content to a file
-    markdown_content = mdformat.text(markdown_content)
-    with open("blind_75.md", "w") as f:
-        f.write(markdown_content)
+    body_content = replace_iframes_with_code(body_content)
 
-    # Use pandoc to generate a pdf
-    print("Generating a PDF file...")
-    os.system("make")
+    html_content = html_content.replace("BODY_CONTENT", body_content)
+    with open("blind_75.html", "w") as f:
+        f.write(html_content)
 
 
 if __name__ == "__main__":

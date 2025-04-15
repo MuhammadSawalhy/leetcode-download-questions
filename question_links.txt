@@ -1,6 +1,6 @@
 ~Array
 https://leetcode.com/problems/two-sum
-https://leetcode.com/problems/best-time-to-buy-and-sell-stock
+https://leetcode.com/problems/best-time-to-buy-and-sell-stock/solutions/4868897/most-optimized-kadane-s-algorithm-java-c-python-rust-javascript/
 https://leetcode.com/problems/contains-duplicate
 https://leetcode.com/problems/product-of-array-except-self
 https://leetcode.com/problems/maximum-subarray
@@ -33,9 +33,6 @@ https://leetcode.com/problems/course-schedule
 https://leetcode.com/problems/pacific-atlantic-water-flow
 https://leetcode.com/problems/number-of-islands
 https://leetcode.com/problems/longest-consecutive-sequence
-https://leetcode.com/problems/alien-dictionary
-https://leetcode.com/problems/graph-valid-tree
-https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph
 ~Interval
 https://leetcode.com/problems/insert-interval
 https://leetcode.com/problems/merge-intervals
@@ -83,4 +80,4 @@ https://leetcode.com/problems/word-search-ii
 ~Heap
 https://leetcode.com/problems/merge-k-sorted-lists
 https://leetcode.com/problems/top-k-frequent-elements
-https://leetcode.com/problems/find-median-from-data-stream
+https://leetcode.com/problems/find-median-from-data-stream/solutions/1330646/c-java-python-minheap-maxheap-solution-picture-explain-clean-concise/
