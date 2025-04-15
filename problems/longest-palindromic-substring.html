@@ -1,0 +1,678 @@
+<h2>Longest Palindromic Substring</h2>
+
+<h3>Statement</h3>
+
+<p>
+  Given a string <code>s</code>, return <em>the longest</em>
+  <span data-keyword="palindromic-string"><em>palindromic</em></span>
+  <span data-keyword="substring-nonempty"><em>substring</em></span> in
+  <code>s</code>.
+</p>
+
+<p>&nbsp;</p>
+<p><strong class="example">Example 1:</strong></p>
+
+<pre>
+<strong>Input:</strong> s = &quot;babad&quot;
+<strong>Output:</strong> &quot;bab&quot;
+<strong>Explanation:</strong> &quot;aba&quot; is also a valid answer.
+</pre>
+
+<p><strong class="example">Example 2:</strong></p>
+
+<pre>
+<strong>Input:</strong> s = &quot;cbbd&quot;
+<strong>Output:</strong> &quot;bb&quot;
+</pre>
+
+<p>&nbsp;</p>
+<p><strong>Constraints:</strong></p>
+
+<ul>
+  <li><code>1 &lt;= s.length &lt;= 1000</code></li>
+  <li><code>s</code> consist of only digits and English letters.</li>
+</ul>
+
+<strong>Tags:</strong> Two Pointers, String, Dynamic Programming
+
+<h3>Hints</h3>
+
+<ul>
+  <li>
+    How can we reuse a previously computed palindrome to compute a larger
+    palindrome?
+  </li>
+  <li>
+    If “aba” is a palindrome, is “xabax” a palindrome? Similarly is “xabay” a
+    palindrome?
+  </li>
+  <li>
+    Complexity based hint:<br />
+    If we use brute-force and check whether for every start and end position a
+    substring is a palindrome we have O(n^2) start - end pairs and O(n)
+    palindromic checks. Can we reduce the time for palindromic checks to O(1) by
+    reusing some previous computation.
+  </li>
+</ul>
+
+<h3>Solution Summary</h3>
+
+Video Solution Solution Approach 1: Check All Substrings Intuition We can start
+with a brute-force approach. We will simply check if each substring is a palindr
+<h3>Solution</h3>
+
+<p>[TOC]</p>
+<h3>Video Solution</h3>
+<hr />
+<div class="video-preview"></div>
+
+<h3>Solution</h3>
+<hr />
+<h4>Approach 1: Check All Substrings</h4>
+<p><strong>Intuition</strong></p>
+<p>
+  We can start with a brute-force approach. We will simply check if each
+  substring is a palindrome, and take the longest one that is.
+</p>
+<p>
+  First, let's talk about how we can check if a given string is a palindrome.
+  This is a classic problem and we can do it using two pointers. If a string is
+  a palindrome, the first character is equal to the last character. The second
+  character is equal to the second last character, and so on.
+</p>
+<p>
+  <img
+    alt="Palindrome Check"
+    src="https://leetcode.com/problems/longest-palindromic-substring/Figures/5/1.png"
+  />
+</p>
+<p>
+  We initialize two pointers: one at the start of the string and another at the
+  end of it. We check if the characters at the pointers are equal - if they
+  aren't, we know the string cannot be a palindrome. If they are equal, we move
+  to the next pair of characters by moving the pointers toward each other. We
+  continue until we either find a mismatch or the pointers meet. If the pointers
+  meet, then we have checked all pairs and we know the string is a palindrome.
+</p>
+<p>
+  One bonus to using this algorithm is that we frequently exit early on strings
+  that are not palindromes. If you had a string of length <code>1000</code> and
+  the third and third last characters did not match, we would exit the algorithm
+  after only 3 iterations.
+</p>
+<p>
+  There's another optimization that we can do. Because the problem wants the
+  longest palindrome, we can start by checking the longest-length substrings and
+  iterate toward the shorter-length substrings. This way, the first time we find
+  a substring that is a palindrome, we can immediately return it as the answer.
+</p>
+<p><strong>Algorithm</strong></p>
+<ol>
+  <li>
+    Create a helper method <code>check(i, j)</code> to determine if a substring
+    is a palindrome.
+  </li>
+  <li>
+    To save space, we will not pass the substring itself. Instead, we will pass
+    two indices that represent the substring in question. The first character
+    will be <code>s[i]</code> and the last character will be
+    <code>s[j - 1]</code>.
+  </li>
+  <li>
+    In this function, declare two pointers <code>left = i</code> and
+    <code>right = j - 1</code>.
+  </li>
+  <li>While <code>left &lt; right</code>, do the following steps:</li>
+  <li>If <code>s[left] != s[right]</code>, return <code>false</code>.</li>
+  <li>
+    Otherwise, increment <code>left</code> and decrement <code>right</code>.
+  </li>
+  <li>If we get through the while loop, return <code>true</code>.</li>
+  <li>
+    Use a for loop to iterate a variable <code>length</code> starting from
+    <code>s.length</code> until <code>1</code>. This variable represents the
+    length of the substrings we are currently considering.
+  </li>
+  <li>
+    Use a for loop to iterate a variable <code>start</code> starting from
+    <code>0</code> until and including <code>s.length - length</code>. This
+    variable represents the starting point of the substring we are currently
+    considering.
+  </li>
+  <li>
+    In each inner loop iteration, we are considering the substring starting at
+    <code>start</code> until <code>start + length</code>. Pass these values into
+    <code>check</code> to see if this substring is a palindrome. If it is,
+    return the substring.
+  </li>
+</ol>
+<p><strong>Implementation</strong></p>
+<pre>
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        for (int length = s.size(); length > 0; length--) {
+            for (int start = 0; start &lt;= s.size() - length; start++) {
+                if (check(s, start, start + length)) {
+                    return s.substr(start, length);
+                }
+            }
+        }
+
+        return "";
+    }
+
+private:
+    bool check(string s, int i, int j) {
+        int left = i;
+        int right = j - 1;
+
+        while (left &lt; right) {
+            if (s[left] != s[right]) {
+                return false;
+            }
+
+            left++;
+            right--;
+        }
+
+        return true;
+    }
+};</pre
+>
+
+<p><strong>Complexity Analysis</strong></p>
+<p>Given $n$ as the length of <code>s</code>,</p>
+<ul>
+  <li>Time complexity: $O(n^3)$</li>
+</ul>
+<p>
+  The two nested for loops iterate $O(n^2)$ times. We check one substring of
+  length <code>n</code>, two substrings of length <code>n - 1</code>, three
+  substrings of length <code>n - 2</code>, and so on.
+</p>
+<p>
+  There are <code>n</code> substrings of length 1, but we don't check them all
+  since any substring of length 1 is a palindrome, and we will return
+  immediately.
+</p>
+<p>
+  Therefore, the number of substrings that we check in the worst case is
+  <code>1 + 2 + 3 + ... + n - 1</code>. This is the partial sum of
+  <a
+    href="https://en.wikipedia.org/wiki/1_%2B_2_%2B_3_%2B_4_%2B_%E2%8B%AF#Partial_sums"
+    >this series</a
+  >
+  for <code>n - 1</code>, which is equal to $\frac{n \cdot (n - 1)}{2} =
+  O(n^2)$.
+</p>
+<p>
+  In each iteration of the while loop, we perform a palindrome check. The cost
+  of this check is linear with <code>n</code> as well, giving us a time
+  complexity of $O(n^3)$.
+</p>
+<p>
+  Note that this time complexity is in the worst case and has a significant
+  constant divisor that is dropped by big O. Due to the optimizations of
+  checking the longer length substrings first and exiting the palindrome check
+  early if we determine that a substring cannot be a palindrome, the practical
+  runtime of this algorithm is not too bad.
+</p>
+<ul>
+  <li>Space complexity: $O(1)$</li>
+</ul>
+<p>
+  We don't count the answer as part of the space complexity. Thus, all we use
+  are a few integer variables.
+</p>
+<p><br /></p>
+<hr />
+<h4>Approach 2: Dynamic Programming</h4>
+<p><strong>Intuition</strong></p>
+<p>
+  Let's say that we knew the substring with inclusive bounds
+  <code>i, j</code> was a palindrome. If <code>s[i - 1] == s[j + 1]</code>, then
+  we know the substring with inclusive bounds <code>i - 1, j + 1</code> must
+  also be a palindrome, and this check can be done in constant time.
+</p>
+<p>
+  We can flip the direction of this logic as well - if
+  <code>s[i] == s[j]</code> and the substring <code>i + 1, j - 1</code> is a
+  palindrome, then the substring <code>i, j</code> must also be a palindrome.
+</p>
+<p>
+  <img
+    alt="DP Example"
+    src="https://leetcode.com/problems/longest-palindromic-substring/Figures/5/2.png"
+  />
+</p>
+<p>
+  We know that all substrings of length 1 are palindromes. From this, we can
+  check if each substring of length 3 is a palindrome using the above fact. We
+  just need to check every <code>i, j</code> pair where <code>j - i = 2</code>.
+  Once we know all palindromes of length 3, we can use that information to find
+  all palindromes of length 5, and then 7, and so on.
+</p>
+<p>
+  What about even-length palindromes? A substring of length 2 is a palindrome if
+  both characters are equal. That is, <code>i, i + 1</code> is a palindrome if
+  <code>s[i] == s[i + 1]</code>. From this, we can use the earlier logic to find
+  all palindromes of length 4, then 6, and so on.
+</p>
+<p>
+  Let's use a table <code>dp</code> with dimensions of <code>n * n</code>.
+  <code>dp[i][j]</code> is a boolean representing if the substring with
+  inclusive bounds <code>i, j</code> is a palindrome. We initialize
+  <code>dp[i][i] = true</code> for the substrings of length 1, and then
+  <code>dp[i][i + 1] = (s[i] == s[i + 1])</code> for the substrings of length 2.
+</p>
+<p>
+  Now, we need to populate the table. We iterate over all
+  <code>i, j</code> pairs, starting with pairs that have a difference of 2
+  (representing substrings of length 3), then pairs with a difference of 3, then
+  4, and so on. For each <code>i, j</code> pair, we check the condition from
+  earlier:
+</p>
+<p><code>s[i] == s[j] &amp;&amp; dp[i + 1][j - 1]</code></p>
+<p>
+  If this condition is true, then the substring with inclusive bounds
+  <code>i, j</code> must be a palindrome. We set <code>dp[i][j] = true</code>.
+</p>
+<p>
+  Because we are starting with the shortest substrings and iterating toward the
+  longest substrings, every time we find a new palindrome, it must be the
+  longest one we have seen so far. We can use this fact to keep track of the
+  answer on the fly.
+</p>
+<p><strong>Algorithm</strong></p>
+<ol>
+  <li>
+    <p>
+      Initialize <code>n = s.length</code> and a boolean table
+      <code>dp</code> with size <code>n * n</code>, and all values to
+      <code>false</code>.
+    </p>
+  </li>
+  <li>
+    <p>
+      Initialize <code>ans = [0, 0]</code>. This will hold the inclusive bounds
+      of the answer.
+    </p>
+  </li>
+  <li>
+    <p>Set all <code>dp[i][i] = true</code>.</p>
+  </li>
+  <li>
+    <p>
+      Iterate over all pairs <code>i, i + 1</code>. For each one, if
+      <code>s[i] == s[i + 1]</code>, then set
+      <code>dp[i][i + 1] = true</code> and update <code>ans = [i, i + 1]</code>.
+    </p>
+  </li>
+  <li>
+    <p>
+      Now, we populate the <code>dp</code> table. Iterate over
+      <code>diff</code> from <code>2</code> until <code>n</code>. This variable
+      represents the difference <code>j - i</code>.
+    </p>
+  </li>
+  <li>
+    <p>
+      In a nested for loop, iterate over <code>i</code> from
+      <code>0</code> until <code>n - diff</code>.
+    </p>
+  </li>
+  <li>
+    <p>Set <code>j = i + diff</code>.</p>
+  </li>
+  <li>
+    Check the condition: if
+    <code>s[i] == s[j] &amp;&amp; dp[i + 1][j - 1]</code>, we found a
+    palindrome.
+  </li>
+  <li>
+    <p>
+      In that case, set <code>dp[i][j] = true</code> and
+      <code>ans = [i, j]</code>
+    </p>
+  </li>
+  <li>
+    <p>
+      Retrieve the answer bounds from <code>ans</code> as <code>i, j</code>.
+      Return the substring of <code>s</code> starting at index
+      <code>i</code> and ending with index <code>j</code>.
+    </p>
+  </li>
+</ol>
+<p><strong>Implementation</strong></p>
+<pre>
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        int n = s.size();
+        vector&lt;vector&lt;bool>> dp(n, vector&lt;bool>(n));
+        array&lt;int, 2> ans = {0, 0};
+
+        for (int i = 0; i &lt; n; ++i) {
+            dp[i][i] = true;
+        }
+
+        for (int i = 0; i &lt; n - 1; ++i) {
+            if (s[i] == s[i + 1]) {
+                dp[i][i + 1] = true;
+                ans = {i, i + 1};
+            }
+        }
+
+        for (int diff = 2; diff &lt; n; ++diff) {
+            for (int i = 0; i &lt; n - diff; ++i) {
+                int j = i + diff;
+                if (s[i] == s[j] &amp;&amp; dp[i + 1][j - 1]) {
+                    dp[i][j] = true;
+                    ans = {i, j};
+                }
+            }
+        }
+
+        int i = ans[0];
+        int j = ans[1];
+        return s.substr(i, j - i + 1);
+    }
+};</pre
+>
+
+<p><strong>Complexity Analysis</strong></p>
+<p>Given $n$ as the length of <code>s</code>,</p>
+<ul>
+  <li>Time complexity: $O(n^2)$</li>
+</ul>
+<p>
+  We declare an <code>n * n</code> table <code>dp</code>, which takes $O(n^2)$
+  time. We then populate $O(n^2)$ states <code>i, j</code> - each state takes
+  $O(1)$ time to compute.
+</p>
+<ul>
+  <li>Space complexity: $O(n^2)$</li>
+</ul>
+<p>The table <code>dp</code> takes $O(n^2)$ space.</p>
+<p><br /></p>
+<hr />
+<h4>Approach 3: Expand From Centers</h4>
+<p><strong>Intuition</strong></p>
+<p>
+  In the first approach, the palindrome check cost $O(n)$. In the second
+  approach, the palindrome check cost $O(1)$. This allowed us to improve the
+  time complexity from $O(n^3)$ to $O(n^2)$.
+</p>
+<p>
+  The problem with the second approach is that we
+  <strong>always</strong> iterated over $O(n^2)$ states of <code>i, j</code>.
+  Can we optimize further to minimize the number of iterations required?
+</p>
+<p>
+  In the first approach, we implemented a palindrome check using two pointers.
+  We started by checking the first and last characters, then the second and
+  second last characters, and so on.
+</p>
+<p>
+  Instead of starting the pointers at the edges and moving inwards, the same
+  logic can be applied when starting the pointers at the center and moving
+  outwards. A palindrome mirrors around its center. Let's say you had
+  <code>s = "racecar"</code>. If we start both pointers at the middle
+  (<code>"e"</code>) and move them away from each other, we can see that at
+  every iteration, the characters match: <code>e -&gt; c -&gt; a -&gt; r</code>.
+</p>
+<p>
+  The previous two approaches focused on the bounds of a substring -
+  <code>i, j</code>. There are $O(n^2)$ bounds, but only $O(n)$ centers. For
+  each index <code>i</code>, we can consider odd-length palindromes by starting
+  the pointers at <code>i, i</code>. To consider the even length palindromes, we
+  can start the pointers at <code>i, i + 1</code>. There are $n$ starting points
+  for the odd-length palindromes and $n - 1$ starting points for the even-length
+  palindromes - that's $2n - 1 = O(n)$ starting points in total.
+</p>
+<p>
+  This is very promising - we can lower the minimum iterations required if we
+  focus on the centers instead of on the bounds. Let's use a helper method
+  <code>expand(i, j)</code> that starts two pointers <code>left = i</code> and
+  <code>right = j</code>. In this method, we will consider <code>i, j</code> as
+  a center. When <code>i == j</code>, we are considering odd-length palindromes.
+  When <code>i != j</code>, we are considering even-length palindromes. We will
+  expand from the center as far as we can to find the longest palindrome, and
+  then return the length of this palindrome.
+</p>
+<p>
+  Let's say that we have a center <code>i, i</code>. We call
+  <code>expand</code> and find a length of <code>length</code>. What are the
+  bounds of the palindrome? Because we are centered at <code>i, i</code>, it
+  means <code>length</code> must be odd. If we perform floor division of
+  <code>length</code> by 2, we will get the number of characters
+  <code>dist</code> on each side of the palindrome. For example, given
+  <code>s = "racecar"</code>, we have <code>length = 7</code> and
+  <code>dist = 7 / 2 = 3</code>. There are 3 characters on each side -
+  <code>"rac"</code> on the left and <code>"car"</code> on the right. Therefore,
+  we can determine that the bounds of the palindrome are
+  <code>i - dist, i + dist</code>.
+</p>
+<p>
+  What about a center at <code>i, i + 1</code>? <code>length</code> must be even
+  now. If we have a palindrome with length <code>2</code>, then
+  <code>length / 2 = 1</code>, but there are zero characters on each side of the
+  center. We can see that <code>dist</code> is too large by 1. Therefore, we
+  will calculate <code>dist</code> as <code>(length / 2) - 1</code> instead.
+  Now, <code>dist</code> correctly represents the number of characters on each
+  side. The bounds of the palindrome are <code>i - dist, i + 1 + dist</code>.
+</p>
+<p><strong>Algorithm</strong></p>
+<ol>
+  <li>
+    Create a helper method <code>expand(i, j)</code> to find the length of the
+    longest palindrome centered at <code>i, j</code>.
+  </li>
+  <li>Set <code>left = i</code> and <code>right = j</code>.</li>
+  <li>
+    While <code>left</code> and <code>right</code> are both in bounds and
+    <code>s[left] == s[right]</code>, move the pointers away from each other.
+  </li>
+  <li>
+    The formula for the length of a substring starting at <code>left</code> and
+    ending at <code>right</code> is <code>right - left + 1</code>.
+  </li>
+  <li>
+    However, when the while loop ends, it implies
+    <code>s[left] != s[right]</code>. Therefore, we need to subtract
+    <code>2</code>. Return <code>right - left - 1</code>.
+  </li>
+  <li>
+    Initialize <code>ans = [0, 0]</code>. This will hold the inclusive bounds of
+    the answer.
+  </li>
+  <li>Iterate <code>i</code> over all indices of <code>s</code>.</li>
+  <li>
+    Find the length of the longest odd-length palindrome centered at
+    <code>i</code>: <code>oddLength = expand(i, i)</code>.
+  </li>
+  <li>
+    If <code>oddLength</code> is the greatest length we have seen so far, i.e.
+    <code>oddLength &gt; ans[1] - ans[0] + 1</code>, update <code>ans</code>.
+  </li>
+  <li>
+    Find the length of the longest odd-length palindrome centered at
+    <code>i</code>: <code>evenLength = expand(i, i + 1)</code>.
+  </li>
+  <li>
+    If <code>evenLength</code> is the greatest length we have seen so far,
+    update <code>ans</code>.
+  </li>
+  <li>
+    Retrieve the answer bounds from <code>ans</code> as <code>i, j</code>.
+    Return the substring of <code>s</code> starting at index <code>i</code> and
+    ending with index <code>j</code>.
+  </li>
+</ol>
+<p><strong>Implementation</strong></p>
+<pre>
+class Solution {
+public:
+    string expand(int i, int j, string s) {
+        int left = i;
+        int right = j;
+
+        while (left >= 0 &amp;&amp; right &lt; s.size() &amp;&amp; s[left] == s[right]) {
+            left--;
+            right++;
+        }
+
+        return s.substr(left + 1, right - left - 1);
+    }
+
+    string longestPalindrome(string s) {
+        string ans = "";
+
+        for (int i = 0; i &lt; s.size(); i++) {
+            string odd = expand(i, i, s);
+            if (odd.size() > ans.size()) {
+                ans = odd;
+            }
+
+            string even = expand(i, i + 1, s);
+            if (even.size() > ans.size()) {
+                ans = even;
+            }
+        }
+
+        return ans;
+    }
+};</pre
+>
+
+<p><strong>Complexity Analysis</strong></p>
+<p>Given $n$ as the length of <code>s</code>,</p>
+<ul>
+  <li>Time complexity: $O(n^2)$</li>
+</ul>
+<p>
+  There are $2n - 1 = O(n)$ centers. For each center, we call
+  <code>expand</code>, which costs up to $O(n)$.
+</p>
+<p>
+  Although the time complexity is the same as in the DP approach, the
+  average/practical runtime of the algorithm is much faster. This is because
+  most centers will not produce long palindromes, so most of the $O(n)$ calls to
+  <code>expand</code> will cost far less than $n$ iterations.
+</p>
+<p>
+  The worst case scenario is when every character in the string is the same.
+</p>
+<ul>
+  <li>Space complexity: $O(1)$</li>
+</ul>
+<p>
+  We don't use any extra space other than a few integers. This is a big
+  improvement on the DP approach.
+</p>
+<p><br /></p>
+<hr />
+<h4>Approach 4: Manacher's Algorithm</h4>
+<p>Believe it or not, this problem can be solved in linear time.</p>
+<p>
+  <a
+    href="https://en.wikipedia.org/wiki/Longest_palindromic_substring#Manacher's_algorithm"
+    >Manacher's algorithm</a
+  >
+  finds the longest palindromic substring in $O(n)$ time and space.
+</p>
+<p>
+  Note: this algorithm is completely out of scope for coding interviews. Because
+  of this, we will not be talking about the algorithm in detail. This approach
+  has been included for the sake of completeness and for those who are curious
+  about algorithms beyond the scope of interviews.
+</p>
+<p>
+  If you wish to learn more about Manacher's algorithm, please reference the
+  above link.
+</p>
+<p><strong>Implementation</strong></p>
+<pre>
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        string s_prime = "#";
+        for (char c : s) {
+            s_prime += c;
+            s_prime += "#";
+        }
+
+        int n = s_prime.length();
+        vector&lt;int> palindrome_radii(n, 0);
+        int center = 0;
+        int radius = 0;
+
+        for (int i = 0; i &lt; n; i++) {
+            int mirror = 2 * center - i;
+
+            if (i &lt; radius) {
+                palindrome_radii[i] = min(radius - i, palindrome_radii[mirror]);
+            }
+
+            while (i + 1 + palindrome_radii[i] &lt; n &amp;&amp;
+                   i - 1 - palindrome_radii[i] >= 0 &amp;&amp;
+                   s_prime[i + 1 + palindrome_radii[i]] ==
+                       s_prime[i - 1 - palindrome_radii[i]]) {
+                palindrome_radii[i]++;
+            }
+
+            if (i + palindrome_radii[i] > radius) {
+                center = i;
+                radius = i + palindrome_radii[i];
+            }
+        }
+
+        int max_length = 0;
+        int center_index = 0;
+        for (int i = 0; i &lt; n; i++) {
+            if (palindrome_radii[i] > max_length) {
+                max_length = palindrome_radii[i];
+                center_index = i;
+            }
+        }
+
+        int start_index = (center_index - max_length) / 2;
+        string longest_palindrome = s.substr(start_index, max_length);
+
+        return longest_palindrome;
+    }
+};</pre
+>
+
+<p><strong>Complexity Analysis</strong></p>
+<p>Given $n$ as the length of <code>s</code>,</p>
+<ul>
+  <li>Time complexity: $O(n)$</li>
+</ul>
+<p>
+  From Wikipedia (the implementation they describe is slightly different from
+  the above code, but it's the same algorithm):
+</p>
+<blockquote>
+  <p>
+    The algorithm runs in linear time. This can be seen by noting that Center
+    strictly increases after each outer loop and the sum Center + Radius is
+    non-decreasing. Moreover, the number of operations in the first inner loop
+    is linear in the increase of the sum Center + Radius while the number of
+    operations in the second inner loop is linear in the increase of Center.
+    Since Center $\leq$ 2n+1 and Radius $\leq$ n, the total number of operations
+    in the first and second inner loops is $O(n)$ and the total number of
+    operations in the outer loop, other than those in the inner loops, is also
+    $O(n)$. The overall running time is therefore $O(n)$.
+  </p>
+</blockquote>
+<ul>
+  <li>Space complexity: $O(n)$</li>
+</ul>
+<p>
+  We use <code>sPrime</code> and <code>palindromeRadii</code>, both of length
+  $O(n)$.
+</p>
+<p><br /></p>
+<hr />

@@ -1,0 +1,221 @@
+<h2>Find Median from Data Stream</h2>
+
+<h3>Statement</h3>
+
+<p>
+  The <strong>median</strong> is the middle value in an ordered integer list. If
+  the size of the list is even, there is no middle value, and the median is the
+  mean of the two middle values.
+</p>
+
+<ul>
+  <li>
+    For example, for <code>arr = [2,3,4]</code>, the median is <code>3</code>.
+  </li>
+  <li>
+    For example, for <code>arr = [2,3]</code>, the median is
+    <code>(2 + 3) / 2 = 2.5</code>.
+  </li>
+</ul>
+
+<p>Implement the MedianFinder class:</p>
+
+<ul>
+  <li>
+    <code>MedianFinder()</code> initializes the
+    <code>MedianFinder</code> object.
+  </li>
+  <li>
+    <code>void addNum(int num)</code> adds the integer <code>num</code> from the
+    data stream to the data structure.
+  </li>
+  <li>
+    <code>double findMedian()</code> returns the median of all elements so far.
+    Answers within <code>10<sup>-5</sup></code> of the actual answer will be
+    accepted.
+  </li>
+</ul>
+
+<p>&nbsp;</p>
+<p><strong class="example">Example 1:</strong></p>
+
+<pre>
+<strong>Input</strong>
+[&quot;MedianFinder&quot;, &quot;addNum&quot;, &quot;addNum&quot;, &quot;findMedian&quot;, &quot;addNum&quot;, &quot;findMedian&quot;]
+[[], [1], [2], [], [3], []]
+<strong>Output</strong>
+[null, null, null, 1.5, null, 2.0]
+
+<strong>Explanation</strong>
+MedianFinder medianFinder = new MedianFinder();
+medianFinder.addNum(1);    // arr = [1]
+medianFinder.addNum(2);    // arr = [1, 2]
+medianFinder.findMedian(); // return 1.5 (i.e., (1 + 2) / 2)
+medianFinder.addNum(3);    // arr[1, 2, 3]
+medianFinder.findMedian(); // return 2.0
+</pre>
+
+<p>&nbsp;</p>
+<p><strong>Constraints:</strong></p>
+
+<ul>
+  <li>
+    <code>-10<sup>5</sup> &lt;= num &lt;= 10<sup>5</sup></code>
+  </li>
+  <li>
+    There will be at least one element in the data structure before calling
+    <code>findMedian</code>.
+  </li>
+  <li>
+    At most <code>5 * 10<sup>4</sup></code> calls will be made to
+    <code>addNum</code> and <code>findMedian</code>.
+  </li>
+</ul>
+
+<p>&nbsp;</p>
+<p><strong>Follow up:</strong></p>
+
+<ul>
+  <li>
+    If all integer numbers from the stream are in the range
+    <code>[0, 100]</code>, how would you optimize your solution?
+  </li>
+  <li>
+    If <code>99%</code> of all integer numbers from the stream are in the range
+    <code>[0, 100]</code>, how would you optimize your solution?
+  </li>
+</ul>
+
+<strong>Tags:</strong> Two Pointers, Design, Sorting, Heap (Priority Queue),
+Data Stream
+
+<h3>Solution Summary</h3>
+
+✔️ Solution 1: MaxHeap to store a half of low numbers, MinHeap to store a half
+of high numbers - The idea is to divide numbers into 2 balanced halves
+<h3>Solution</h3>
+
+<p>
+  <strong
+    >✔️ Solution 1: MaxHeap to store a half of low numbers, MinHeap to store a
+    half of high numbers</strong
+  >
+</p>
+<ul>
+  <li>
+    The idea is to divide numbers into 2 balanced halves, one half
+    <code>low</code> stores low numbers, the other half <code>high</code> stores
+    high numbers. To access the median in <code>O(1)</code>, we need a data
+    structure that give us the maximum of <code>low</code> half and the minimum
+    of <code>high</code> half in <code>O(1)</code>. That's where
+    <code>maxHeap</code> and <code>minHeap</code> come into play.
+  </li>
+  <li>
+    We use <code>maxHeap</code> to store a half of <strong>low numbers</strong>,
+    top of the maxHeap is the highest number among low numbers.
+  </li>
+  <li>
+    We use <code>minHeap</code> to store a half of
+    <strong>high numbers</strong>, top of the minHeap is the lowest number among
+    high numbers.
+  </li>
+  <li>
+    We need to balance the size between <code>maxHeap</code> and
+    <code>minHeap</code> while processing. Hence after adding
+    <code>k</code> elements,
+  </li>
+  <li>
+    If <code>k = 2 * i</code> then <code>maxHeap.size = minHeap.size = i</code>
+  </li>
+  <li>
+    If <code>k = 2 * i + 1</code>, let <code>maxHeap</code> store 1 element more
+    than <code>minHeap</code>, then
+    <code>maxHeap.size = minHeap.size + 1</code>.
+  </li>
+  <li>
+    When adding a new number <code>num</code> into our
+    <code>MedianFinder</code>:
+  </li>
+  <li>
+    Firstly, add <code>num</code> to the <code>maxHeap</code>, now
+    <code>maxHeap</code> may contain the big element (which should belong to
+    <code>minHeap</code>). So we need to balance, by removing the highest
+    element from <code>maxHeap</code>, and offer it to <code>minHeap</code>.
+  </li>
+  <li>
+    Now, the <code>minHeap</code> might hold more elements than
+    <code>maxHeap</code>, in that case, we need to balance the size, by removing
+    the lowest element from <code>minHeap</code> and offer it back to
+    <code>maxHeap</code>.
+  </li>
+  <li>When doing <code>findMedian()</code>:</li>
+  <li>
+    If <code>maxHeap.size &gt; minHeap.size</code> return top of the
+    <code>maxHeap</code>, which is the highest number amongs low numbers.
+  </li>
+  <li>
+    Else if <code>maxHeap.size == minHeap</code> return the
+    <code>(maxHeap.top() + minHeap.top()) / 2</code>.
+  </li>
+</ul>
+<p>
+  <img
+    alt="image"
+    src="https://assets.leetcode.com/users/images/0eb8feba-cbfa-4f73-8d26-9aad226bdbc5_1626016093.9717174.png"
+  />
+</p>
+<pre>
+class MedianFinder {
+public:
+    priority_queue&lt;int> maxHeap;
+    priority_queue&lt;int, vector&lt;int>, greater&lt;int>> minHeap;
+    
+    MedianFinder() {
+    }
+    void addNum(int num) {
+        maxHeap.push(num);
+        minHeap.push(maxHeap.top());
+        maxHeap.pop();
+        if (minHeap.size() > maxHeap.size()) {
+            maxHeap.push(minHeap.top());
+            minHeap.pop();
+        }
+    }
+    double findMedian() {
+        if (maxHeap.size() > minHeap.size()) return maxHeap.top();
+        return (maxHeap.top() + minHeap.top()) / 2.0;
+    }
+};</pre
+>
+
+<p><strong>Complexity</strong></p>
+<ul>
+  <li>Time:</li>
+  <li>Constructor: <code>O(1)</code></li>
+  <li>addNum: <code>O(logN)</code></li>
+  <li>findMedian: <code>O(1)</code></li>
+  <li>Space: <code>O(N)</code></li>
+</ul>
+<hr />
+<p><strong>✔️ Solution 2: SortedList</strong></p>
+<p>```python from sortedcontainers import SortedList class MedianFinder:</p>
+<pre><code>def __init__(self):
+    self.arr = SortedList()
+
+def addNum(self, num: int) -&gt; None:
+    self.arr.add(num)
+
+def findMedian(self) -&gt; float:
+    n = len(self.arr)
+    if n % 2 == 1:
+        return self.arr[n//2]
+    return (self.arr[n//2] + self.arr[n//2-1]) / 2
+</code></pre>
+<p>```</p>
+<p><strong>Complexity</strong></p>
+<ul>
+  <li>Time:</li>
+  <li>Constructor: <code>O(1)</code></li>
+  <li>addNum, findMedian: <code>O(logN)</code></li>
+  <li>Space: <code>O(N)</code></li>
+</ul>

@@ -1,0 +1,451 @@
+<h2>Top K Frequent Elements</h2>
+
+<h3>Statement</h3>
+
+<p>
+  Given an integer array <code>nums</code> and an integer <code>k</code>, return
+  <em>the</em> <code>k</code> <em>most frequent elements</em>. You may return
+  the answer in <strong>any order</strong>.
+</p>
+
+<p>&nbsp;</p>
+<p><strong class="example">Example 1:</strong></p>
+<pre><strong>Input:</strong> nums = [1,1,1,2,2,3], k = 2
+<strong>Output:</strong> [1,2]
+</pre>
+<p><strong class="example">Example 2:</strong></p>
+<pre><strong>Input:</strong> nums = [1], k = 1
+<strong>Output:</strong> [1]
+</pre>
+<p>&nbsp;</p>
+<p><strong>Constraints:</strong></p>
+
+<ul>
+  <li>
+    <code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code>
+  </li>
+  <li>
+    <code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code>
+  </li>
+  <li>
+    <code>k</code> is in the range
+    <code>[1, the number of unique elements in the array]</code>.
+  </li>
+  <li>
+    It is <strong>guaranteed</strong> that the answer is
+    <strong>unique</strong>.
+  </li>
+</ul>
+
+<p>&nbsp;</p>
+<p>
+  <strong>Follow up:</strong> Your algorithm&#39;s time complexity must be
+  better than <code>O(n log n)</code>, where n is the array&#39;s size.
+</p>
+
+<strong>Tags:</strong> Array, Hash Table, Divide and Conquer, Sorting, Heap
+(Priority Queue), Bucket Sort, Counting, Quickselect
+
+<h3>Solution Summary</h3>
+
+Video Solution   Solution Article Approach 1: Heap Let's start from the simple
+heap approach with \mathcal{O}(N \log k) time complexity. To ensure that
+\mathcal
+<h3>Solution</h3>
+
+<hr />
+<h4>Approach 1: Heap</h4>
+<p>
+  Let's start from the simple
+  <a href="https://en.wikipedia.org/wiki/Heap_(data_structure)">heap</a>
+  approach with $\mathcal{O}(N \log k)$ time complexity. To ensure that
+  $\mathcal{O}(N \log k)$ is always less than $\mathcal{O}(N \log N)$, the
+  particular case $k = N$ could be considered separately and solved in
+  $\mathcal{O}(N)$ time.
+</p>
+<p><strong>Algorithm</strong></p>
+<ul>
+  <li>
+    <p>
+      The first step is to build a hash map
+      <code>element -&gt; its frequency</code>. In Java, we use the data
+      structure <code>HashMap</code>. Python provides a dictionary subclass
+      <code>Counter</code> to initialize the hash map we need directly from the
+      input array. This step takes $\mathcal{O}(N)$ time where <code>N</code> is
+      a number of elements in the list.
+    </p>
+  </li>
+  <li>
+    <p>
+      The second step is to build a heap of <em>size k using N elements</em>. To
+      add the first <code>k</code> elements takes a linear time $\mathcal{O}(k)$
+      in the average case, and $O(\log 1 + \log 2 + ... + \log k) = O(log k!) =
+      \mathcal{O}(k \log k)$ in the worst case. It's equivalent to
+      <a href="https://hg.python.org/cpython/file/2.7/Lib/heapq.py#l16"
+        >heapify implementation in Python</a
+      >. After the first <code>k</code> elements we start to push and pop at
+      each step, <code>N - k</code> steps in total. The time complexity of heap
+      push/pop is $\mathcal{O}(\log k)$ and we do it <code>N - k</code> times
+      which means $\mathcal{O}((N - k)\log k)$ time complexity. Adding both
+      parts up, we get $\mathcal{O}(N \log k)$ time complexity for the second
+      step.
+    </p>
+  </li>
+  <li>
+    <p>
+      The third and last step is to convert the heap into an output array. That
+      could be done in $\mathcal{O}(k \log k)$ time.
+    </p>
+  </li>
+</ul>
+<p>
+  In Python, library <code>heapq</code> provides a method <code>nlargest</code>,
+  which
+  <a href="https://hg.python.org/cpython/file/2.7/Lib/heapq.py#l203"
+    >combines the last two steps under the hood</a
+  >
+  and has the same $\mathcal{O}(N \log k)$ time complexity.
+</p>
+<p>
+  <img
+    alt="diff"
+    src="https://leetcode.com/problems/top-k-frequent-elements/Figures/347_rewrite/summary.png"
+  />
+</p>
+<p><strong>Implementation</strong></p>
+<pre>
+class Solution {
+public:
+    vector&lt;int> topKFrequent(vector&lt;int>&amp; nums, int k) {
+        // O(1) time
+        if (k == nums.size()) {
+            return nums;
+        }
+
+        // 1. Build hash map: element and how often it appears
+        // O(N) time
+        unordered_map&lt;int, int> count_map;
+        for (int n : nums) {
+            count_map[n] += 1;
+        }
+
+        //Initialise a heap with the most frequent elements at the top
+        auto comp = [&amp;count_map](int n1, int n2) { return count_map[n1] > count_map[n2]; };
+        priority_queue&lt;int, vector&lt;int>, decltype(comp)> heap(comp);
+
+        // 2. Keep k top frequent elements in the heap
+        // O(N log k) &lt; O(N log N) time
+        for (pair&lt;int, int> p : count_map) {
+            heap.push(p.first);
+            if (heap.size() > k) heap.pop();
+        }
+
+        // 3. Build an output array
+        // O(k log k) time
+        vector&lt;int> top(k);
+        for (int i = k - 1; i >= 0; i--) {
+            top[i] = heap.top();
+            heap.pop();
+        }
+        return top;
+    }
+};</pre
+>
+
+<p><strong>Complexity Analysis</strong></p>
+<ul>
+  <li>
+    <p>
+      Time complexity : $\mathcal{O}(N \log k)$ if $k &lt; N$ and
+      $\mathcal{O}(N)$ in the particular case of $N = k$. That ensures time
+      complexity to be better than $\mathcal{O}(N \log N)$.
+    </p>
+  </li>
+  <li>
+    <p>
+      Space complexity : $\mathcal{O}(N + k)$ to store the hash map with not
+      more $N$ elements and a heap with $k$ elements.
+      <br />
+      <br />
+    </p>
+  </li>
+</ul>
+<hr />
+<h4>Approach 2: Quickselect (Hoare's selection algorithm)</h4>
+<p>
+  Quickselect is a
+  <a href="https://en.wikipedia.org/wiki/Quickselect">textbook algorithm</a>
+  typically used to solve the problems "find <code>k</code
+  ><em>th</em> something": <code>k</code><em>th</em> smallest, <code>k</code
+  ><em>th</em> largest, <code>k</code><em>th</em> most frequent, <code>k</code
+  ><em>th</em> less frequent, etc. Like quicksort, quickselect was developed by
+  <a href="https://en.wikipedia.org/wiki/Tony_Hoare">Tony Hoare</a> and is also
+  known as <em>Hoare's selection algorithm</em>.
+</p>
+<p>
+  It has $\mathcal{O}(N)$ <em>average</em> time complexity and is widely used in
+  practice. It is worth noting that its worst-case time complexity is
+  $\mathcal{O}(N^2)$, although the probability of this worst-case is negligible.
+</p>
+<p>The approach is the same as for quicksort.</p>
+<blockquote>
+  <p>
+    One chooses a pivot and defines its position in a sorted array in a linear
+    time using the so-called <em>partition algorithm</em>.
+  </p>
+</blockquote>
+<p>
+  As an output, we have an array where the pivot is in its perfect position in
+  the ascending sorted array, sorted by the frequency. All elements on the left
+  of the pivot are less frequent than the pivot, and all elements on the right
+  are more frequent or have the same frequency.
+</p>
+<p>
+  Hence the array is now split into two parts. If by chance our pivot element
+  took <code>N - k</code><em>th</em> final position, then $k$ elements on the
+  right are these top $k$ frequent we're looking for. If not, we can choose one
+  more pivot and place it in its perfect position.
+</p>
+<p>
+  <img
+    alt="diff"
+    src="https://leetcode.com/problems/top-k-frequent-elements/Figures/347_rewrite/hoare.png"
+  />
+</p>
+<p>
+  If that were a quicksort algorithm, one would have to process both parts of
+  the array. That would result in $\mathcal{O}(N \log N)$ time complexity. In
+  this case, there is no need to deal with both parts since one knows in which
+  part to search for <code>N - k</code><em>th</em> less frequent element, and
+  that reduces the average time complexity to $\mathcal{O}(N)$.
+</p>
+<p><strong>Algorithm</strong></p>
+<p>The algorithm is quite straightforward :</p>
+<ul>
+  <li>
+    <p>
+      Build a hash map <code>element -&gt; its frequency</code> and convert its
+      keys into the array <code>unique</code> of unique elements. Note that
+      elements are unique, but their frequencies are <em>not</em>. That means we
+      need a partition algorithm that works fine with <em>duplicates</em>.
+    </p>
+  </li>
+  <li>
+    <p>
+      Work with <code>unique</code> array. Use a partition scheme (please check
+      the next section) to place the pivot into its perfect position
+      <code>pivot_index</code> in the sorted array, move less frequent elements
+      to the left of the pivot, and more frequent or of the same frequency - to
+      the right.
+    </p>
+  </li>
+  <li>
+    <p>Compare <code>pivot_index</code> and <code>N - k</code>.</p>
+  </li>
+  <li>
+    <p>
+      If <code>pivot_index == N - k</code>, the pivot is <code>N - k</code
+      ><em>th</em> most frequent element, and all elements on the right are more
+      frequent or of the same frequency. Return these top $k$ frequent elements.
+    </p>
+  </li>
+  <li>
+    <p>Otherwise, choose the side of the array to proceed recursively.</p>
+  </li>
+</ul>
+<p>
+  <img
+    alt="diff"
+    src="https://leetcode.com/problems/top-k-frequent-elements/Figures/347_rewrite/details.png"
+  />
+</p>
+<p><strong>Lomuto's Partition Scheme</strong></p>
+<p>
+  There is a zoo of partition algorithms. The most simple one is
+  <a href="https://en.wikipedia.org/wiki/Quicksort#Lomuto_partition_scheme"
+    >Lomuto's Partition Scheme</a
+  >, and so is what we will use in this article.
+</p>
+<p>Here is how it works:</p>
+<ul>
+  <li>
+    <p>Move the pivot at the end of the array using swap.</p>
+  </li>
+  <li>
+    <p>
+      Set the pointer at the beginning of the array
+      <code>store_index = left</code>.
+    </p>
+  </li>
+  <li>
+    <p>
+      Iterate over the array and move all less frequent elements to the left
+      <code>swap(store_index, i)</code>. Move <code>store_index</code> one step
+      to the right after each swap.
+    </p>
+  </li>
+  <li>
+    <p>Move the pivot to its final place, and return this index.</p>
+  </li>
+</ul>
+<p>!?!../Documents/347_RES.json:1000,556!?!</p>
+<pre>
+int partition(int left, int right, int pivot_index) {
+    int pivot_frequency = count_map[unique[pivot_index]];
+    // 1. Move the pivot to the end
+    swap(unique[pivot_index], unique[right]);
+
+    // 2. Move all less frequent elements to the left
+    int store_index = left;
+    for (int i = left; i &lt;= right; i++) {
+        if (count_map[unique[i]] &lt; pivot_frequency) {
+            swap(unique[store_index], unique[i]);
+            store_index += 1;
+        }
+    }
+
+    // 3. Move the pivot to its final place
+    swap(unique[right], unique[store_index]);
+
+    return store_index;
+}</pre
+>
+
+<p><strong>Implementation</strong></p>
+<p>Here is a total algorithm implementation.</p>
+<pre>
+class Solution {
+private:
+    vector&lt;int> unique;
+    map&lt;int, int> count_map;
+
+public:
+    int partition(int left, int right, int pivot_index) {
+        int pivot_frequency = count_map[unique[pivot_index]];
+        // 1. Move the pivot to the end
+        swap(unique[pivot_index], unique[right]);
+
+        // 2. Move all less frequent elements to the left
+        int store_index = left;
+        for (int i = left; i &lt;= right; i++) {
+            if (count_map[unique[i]] &lt; pivot_frequency) {
+                swap(unique[store_index], unique[i]);
+                store_index += 1;
+            }
+        }
+
+        // 3. Move the pivot to its final place
+        swap(unique[right], unique[store_index]);
+
+        return store_index;
+    }
+
+    void quickselect(int left, int right, int k_smallest) {
+        /*
+        Sort a list within left..right till kth less frequent element
+        takes its place. 
+        */
+
+        // base case: the list contains only one element
+        if (left == right) return;
+
+        int pivot_index = left + rand() % (right - left + 1);
+
+        // Find the pivot position in a sorted list
+        pivot_index = partition(left, right, pivot_index);
+
+        //If the pivot is in its final sorted position
+        if (k_smallest == pivot_index) {
+            return;
+        } else if (k_smallest &lt; pivot_index) {
+            // go left
+            quickselect(left, pivot_index - 1, k_smallest);
+        } else {
+            // go right
+            quickselect(pivot_index + 1, right, k_smallest);
+        }
+    }
+
+    vector&lt;int> topKFrequent(vector&lt;int>&amp; nums, int k) {
+        // build hash map: element and how often it appears
+        for (int n : nums) {
+            count_map[n] += 1;
+        }
+
+        // array of unique elements
+        int n = count_map.size();
+        for (pair&lt;int, int> p : count_map) {
+            unique.push_back(p.first);
+        }
+
+        // kth top frequent element is (n - k)th less frequent.
+        // Do a partial sort: from less frequent to the most frequent, till
+        // (n - k)th less frequent element takes its place (n - k) in a sorted array.
+        // All elements on the left are less frequent.
+        // All the elements on the right are more frequent.
+        quickselect(0, n - 1, n - k);
+        // Return top k frequent elements
+        vector&lt;int> top_k_frequent(k);
+        copy(unique.begin() + n - k, unique.end(), top_k_frequent.begin());
+        return top_k_frequent;
+    }
+};</pre
+>
+
+<p><strong>Complexity Analysis</strong></p>
+<ul>
+  <li>
+    Time complexity: $\mathcal{O}(N)$ in the average case, $\mathcal{O}(N^2)$ in
+    the worst case.
+    <a
+      href="https://leetcode.com/explore/learn/card/recursion-ii/470/divide-and-conquer/2871/"
+      >Please refer to this card for a good detailed explanation of Master
+      Theorem</a
+    >. Master Theorem helps to get an average complexity by writing the
+    algorithm cost as $T(N) = a T(N / b) + f(N)$. Here we have an example of
+    Master Theorem case III: $T(N) = T \left(\frac{N}{2}\right) + N$, which
+    results in $\mathcal{O}(N)$ time complexity. That's the case with random
+    pivots.
+  </li>
+</ul>
+<p>
+  In the worst case of constantly badly chosen pivots, the problem is not
+  divided by half at each step, it becomes just one element less, which leads to
+  $\mathcal{O}(N^2)$ time complexity. It happens, for example, if at each step
+  you choose the pivot not randomly, but take the rightmost element. For the
+  random pivot choice, the probability of having such a worst-case is negligibly
+  small.
+</p>
+<ul>
+  <li>
+    Space complexity: up to $\mathcal{O}(N)$ to store hash map and array of
+    unique elements.
+    <br />
+    <br />
+  </li>
+</ul>
+<hr />
+<h4>Further Discussion: Could We Do Worst-Case Linear Time?</h4>
+<p>
+  In theory, we could, the algorithm is called
+  <a href="https://en.wikipedia.org/wiki/Median_of_medians">Median of Medians</a
+  >.
+</p>
+<p>This method is never used in practice because of two drawbacks:</p>
+<ul>
+  <li>
+    <p>
+      It's <em>outperformer</em>. Yes, it works in a linear time $\alpha N$, but
+      the constant $\alpha$ is so large that in practice it often works even
+      slower than $N^2$.
+    </p>
+  </li>
+  <li>
+    <p>
+      It doesn't work with duplicates.
+      <br />
+      <br />
+    </p>
+  </li>
+</ul>
+<hr />

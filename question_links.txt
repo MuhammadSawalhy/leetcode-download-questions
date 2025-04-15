@@ -37,8 +37,6 @@ https://leetcode.com/problems/longest-consecutive-sequence
 https://leetcode.com/problems/insert-interval
 https://leetcode.com/problems/merge-intervals
 https://leetcode.com/problems/non-overlapping-intervals
-https://leetcode.com/problems/meeting-rooms
-https://leetcode.com/problems/meeting-rooms-ii
 ~Linked List
 https://leetcode.com/problems/reverse-linked-list
 https://leetcode.com/problems/linked-list-cycle
@@ -61,7 +59,6 @@ https://leetcode.com/problems/valid-parentheses
 https://leetcode.com/problems/valid-palindrome
 https://leetcode.com/problems/longest-palindromic-substring
 https://leetcode.com/problems/palindromic-substrings
-https://leetcode.com/problems/encode-and-decode-strings
 ~Tree
 https://leetcode.com/problems/maximum-depth-of-binary-tree
 https://leetcode.com/problems/same-tree
@@ -75,7 +72,6 @@ https://leetcode.com/problems/validate-binary-search-tree
 https://leetcode.com/problems/kth-smallest-element-in-a-bst
 https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree
 https://leetcode.com/problems/implement-trie-prefix-tree
-https://leetcode.com/problems/add-and-search-word-data-structure-design
 https://leetcode.com/problems/word-search-ii
 ~Heap
 https://leetcode.com/problems/merge-k-sorted-lists

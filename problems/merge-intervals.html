@@ -1,0 +1,305 @@
+<h2>Merge Intervals</h2>
+
+<h3>Statement</h3>
+
+<p>
+  Given an array&nbsp;of <code>intervals</code>&nbsp;where
+  <code>intervals[i] = [start<sub>i</sub>, end<sub>i</sub>]</code>, merge all
+  overlapping intervals, and return
+  <em
+    >an array of the non-overlapping intervals that cover all the intervals in
+    the input</em
+  >.
+</p>
+
+<p>&nbsp;</p>
+<p><strong class="example">Example 1:</strong></p>
+
+<pre>
+<strong>Input:</strong> intervals = [[1,3],[2,6],[8,10],[15,18]]
+<strong>Output:</strong> [[1,6],[8,10],[15,18]]
+<strong>Explanation:</strong> Since intervals [1,3] and [2,6] overlap, merge them into [1,6].
+</pre>
+
+<p><strong class="example">Example 2:</strong></p>
+
+<pre>
+<strong>Input:</strong> intervals = [[1,4],[4,5]]
+<strong>Output:</strong> [[1,5]]
+<strong>Explanation:</strong> Intervals [1,4] and [4,5] are considered overlapping.
+</pre>
+
+<p>&nbsp;</p>
+<p><strong>Constraints:</strong></p>
+
+<ul>
+  <li>
+    <code>1 &lt;= intervals.length &lt;= 10<sup>4</sup></code>
+  </li>
+  <li><code>intervals[i].length == 2</code></li>
+  <li>
+    <code
+      >0 &lt;= start<sub>i</sub> &lt;= end<sub>i</sub> &lt;= 10<sup
+        >4</sup
+      ></code
+    >
+  </li>
+</ul>
+
+<strong>Tags:</strong> Array, Sorting
+
+<h3>Solution Summary</h3>
+
+Video Solution   Solution Article Approach 1: Connected Components Intuition If
+we draw a graph (with intervals as nodes) that contains undirected edges between
+<h3>Solution</h3>
+
+<hr />
+<h4>Approach 1: Connected Components</h4>
+<p><strong>Intuition</strong></p>
+<p>
+  If we draw a graph (with intervals as nodes) that contains undirected edges
+  between all pairs of intervals that overlap, then all intervals in each
+  <em>connected component</em> of the graph can be merged into a single
+  interval.
+</p>
+<p><strong>Algorithm</strong></p>
+<p>
+  With the above intuition in mind, we can represent the graph as an adjacency
+  list, inserting directed edges in both directions to simulate undirected
+  edges. Then, to determine which connected component each node is in, we
+  perform graph traversals from arbitrary unvisited nodes until all nodes have
+  been visited. To do this efficiently, we store visited nodes in a
+  <code>Set</code>, allowing for constant time containment checks and insertion.
+  Finally, we consider each connected component, merging all of its intervals by
+  constructing a new <code>Interval</code> with <code>start</code> equal to the
+  minimum start among them and <code>end</code> equal to the maximum end.
+</p>
+<p>
+  This algorithm is correct simply because it is basically the brute force
+  solution. We compare every interval to every other interval, so we know
+  exactly which intervals overlap. The reason for the connected component search
+  is that two intervals may not directly overlap, but might overlap indirectly
+  via a third interval. See the example below to see this more clearly.
+</p>
+<p>
+  <img
+    alt="Components Example"
+    src="https://leetcode.com/problems/merge-intervals/Figures/56/component.png"
+  />
+</p>
+<p>
+  Although (1, 5) and (6, 10) do not directly overlap, either would overlap with
+  the other if first merged with (4, 7). There are two connected components, so
+  if we merge their nodes, we expect to get the following two merged intervals:
+</p>
+<p>(1, 10), (15, 20)</p>
+<pre>
+class Solution {
+public:
+    map&lt;vector&lt;int>, vector&lt;vector&lt;int>>> graph;
+    map&lt;int, vector&lt;vector&lt;int>>> nodes_in_comp;
+    set&lt;vector&lt;int>> visited;
+
+    bool overlap(vector&lt;int>&amp; a, vector&lt;int>&amp; b) {
+        return a[0] &lt;= b[1] and b[0] &lt;= a[1];
+    }
+
+    // build a graph where an undirected edge between intervals u and v exists
+    // iff u and v overlap.
+    void buildGraph(vector&lt;vector&lt;int>>&amp; intervals) {
+        for (auto interval1 : intervals) {
+            for (auto interval2 : intervals) {
+                if (overlap(interval1, interval2)) {
+                    graph[interval1].push_back(interval2);
+                    graph[interval2].push_back(interval1);
+                }
+            }
+        }
+    }
+
+    // merges all of the nodes in this connected component into one interval.
+    vector&lt;int> mergeNodes(vector&lt;vector&lt;int>>&amp; nodes) {
+        int min_start = nodes[0][0];
+        for (auto node : nodes) {
+            min_start = min(min_start, node[0]);
+        }
+
+        int max_end = nodes[0][1];
+        for (auto node : nodes) {
+            max_end = max(max_end, node[1]);
+        }
+
+        return {min_start, max_end};
+    }
+
+    // use depth-first search to mark all nodes in the same connected component
+    // with the same integer.
+    void markComponentDFS(vector&lt;int>&amp; start, int comp_number) {
+        stack&lt;vector&lt;int>> stk;
+        stk.push(start);
+
+        while (!stk.empty()) {
+            vector&lt;int> node = stk.top();
+            stk.pop();
+
+            // not found
+            if (visited.find(node) == visited.end()) {
+                visited.insert(node);
+
+                nodes_in_comp[comp_number].push_back(node);
+
+                for (auto child : graph[node]) {
+                    stk.push(child);
+                }
+            }
+        }
+    }
+
+    // gets the connected components of the interval overlap graph.
+    void buildComponents(vector&lt;vector&lt;int>>&amp; intervals) {
+        int comp_number = 0;
+
+        for (auto interval : intervals) {
+            if (visited.find(interval) == visited.end()) {
+                markComponentDFS(interval, comp_number);
+                comp_number++;
+            }
+        }
+    }
+
+    vector&lt;vector&lt;int>> merge(vector&lt;vector&lt;int>>&amp; intervals) {
+        buildGraph(intervals);
+        buildComponents(intervals);
+
+        // for each component, merge all intervals into one interval.
+        vector&lt;vector&lt;int>> merged;
+        for (size_t comp = 0; comp &lt; nodes_in_comp.size(); comp++) {
+            merged.push_back(mergeNodes(nodes_in_comp[comp]));
+        }
+
+        return merged;
+    }
+};</pre
+>
+
+<p><strong>Complexity Analysis</strong></p>
+<ul>
+  <li>Time complexity : $O(n^2)$</li>
+</ul>
+<p>
+  Building the graph costs $O(V + E) = O(V) + O(E) = O(n) + O(n^2) = O(n^2)$
+  time, as in the worst case all intervals are mutually overlapping. Traversing
+  the graph has the same cost (although it might appear higher at first) because
+  our <code>visited</code> set guarantees that each node will be visited exactly
+  once. Finally, because each node is part of exactly one component, the merge
+  step costs $O(V) = O(n)$ time. This all adds up as follows:
+</p>
+<p>$$ O(n^2) + O(n^2) + O(n) = O(n^2) $$</p>
+<ul>
+  <li>Space complexity : $O(n^2)$</li>
+</ul>
+<p>
+  As previously mentioned, in the worst case, all intervals are mutually
+  overlapping, so there will be an edge for every pair of intervals. Therefore,
+  the memory footprint is quadratic in the input size.
+</p>
+<p><br /></p>
+<hr />
+<h4>Approach 2: Sorting</h4>
+<p><strong>Intuition</strong></p>
+<p>
+  If we sort the intervals by their <code>start</code> value, then each set of
+  intervals that can be merged will appear as a contiguous "run" in the sorted
+  list.
+</p>
+<p><strong>Algorithm</strong></p>
+<p>
+  First, we sort the list as described. Then, we insert the first interval into
+  our <code>merged</code> list and continue considering each interval in turn as
+  follows: If the current interval begins <em>after</em> the previous interval
+  ends, then they do not overlap and we can append the current interval to
+  <code>merged</code>. Otherwise, they do overlap, and we merge them by updating
+  the <code>end</code> of the previous interval if it is less than the
+  <code>end</code> of the current interval.
+</p>
+<p>
+  A simple proof by contradiction shows that this algorithm always produces the
+  correct answer. First, suppose that the algorithm at some point fails to merge
+  two intervals that should be merged. This would imply that there exists some
+  triple of indices $i$, $j$, and $k$ in a list of intervals $\text{ints}$ such
+  that $i &lt; j &lt; k$ and ($\text{ints[i]}$, $\text{ints[k]}$) can be merged,
+  but neither ($\text{ints[i]}$, $\text{ints[j]}$) nor ($\text{ints[j]}$,
+  $\text{ints[k]}$) can be merged. From this scenario follow several
+  inequalities:
+</p>
+<p>
+  $$ \begin{aligned} \text{ints[i].end} &lt; \text{ints[j].start} \
+  \text{ints[j].end} &lt; \text{ints[k].start} \ \text{ints[i].end} \geq
+  \text{ints[k].start} \ \end{aligned} $$
+</p>
+<p>
+  We can chain these inequalities (along with the following inequality, implied
+  by the well-formedness of the intervals: $\text{ints[j].start} \leq
+  \text{ints[j].end}$) to demonstrate a contradiction:
+</p>
+<p>
+  $$ \begin{aligned} \text{ints[i].end} &lt; \text{ints[j].start} \leq
+  \text{ints[j].end} &lt; \text{ints[k].start} \ \text{ints[i].end} \geq
+  \text{ints[k].start} \end{aligned} $$
+</p>
+<p>
+  Therefore, all mergeable intervals must occur in a contiguous run of the
+  sorted list.
+</p>
+<p>
+  <img
+    alt="Sorting Example"
+    src="https://leetcode.com/problems/merge-intervals/Figures/56/sort.png"
+  />
+</p>
+<p>
+  Consider the example above, where the intervals are sorted, and then all
+  mergeable intervals form contiguous blocks.
+</p>
+<pre>
+class Solution {
+public:
+    vector&lt;vector&lt;int>> merge(vector&lt;vector&lt;int>>&amp; intervals) {
+        sort(intervals.begin(), intervals.end());
+
+        vector&lt;vector&lt;int>> merged;
+        for (auto interval : intervals) {
+            // if the list of merged intervals is empty or if the current
+            // interval does not overlap with the previous, simply append it.
+            if (merged.empty() || merged.back()[1] &lt; interval[0]) {
+                merged.push_back(interval);
+            }
+            // otherwise, there is overlap, so we merge the current and previous
+            // intervals.
+            else {
+                merged.back()[1] = max(merged.back()[1], interval[1]);
+            }
+        }
+        return merged;
+    }
+};</pre
+>
+
+<p><strong>Complexity Analysis</strong></p>
+<ul>
+  <li>Time complexity : $O(n\log{}n)$</li>
+</ul>
+<p>
+  Other than the <code>sort</code> invocation, we do a simple linear scan of the
+  list, so the runtime is dominated by the $O(n\log{}n)$ complexity of sorting.
+</p>
+<ul>
+  <li>Space complexity : $O(\log N)$ (or $O(n)$)</li>
+</ul>
+<p>
+  If we can sort <code>intervals</code> in place, we do not need more than
+  constant additional space, although the sorting itself takes $O(\log n)$
+  space. Otherwise, we must allocate linear space to store a copy of
+  <code>intervals</code> and sort that.
+</p>

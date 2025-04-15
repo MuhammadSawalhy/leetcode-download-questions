@@ -1,0 +1,239 @@
+<h2>Two Sum</h2>
+
+<h3>Statement</h3>
+
+<p>
+  Given an array of integers <code>nums</code>&nbsp;and an integer
+  <code>target</code>, return
+  <em
+    >indices of the two numbers such that they add up to <code>target</code></em
+  >.
+</p>
+
+<p>
+  You may assume that each input would have
+  <strong><em>exactly</em> one solution</strong>, and you may not use the
+  <em>same</em> element twice.
+</p>
+
+<p>You can return the answer in any order.</p>
+
+<p>&nbsp;</p>
+<p><strong class="example">Example 1:</strong></p>
+
+<pre>
+<strong>Input:</strong> nums = [2,7,11,15], target = 9
+<strong>Output:</strong> [0,1]
+<strong>Explanation:</strong> Because nums[0] + nums[1] == 9, we return [0, 1].
+</pre>
+
+<p><strong class="example">Example 2:</strong></p>
+
+<pre>
+<strong>Input:</strong> nums = [3,2,4], target = 6
+<strong>Output:</strong> [1,2]
+</pre>
+
+<p><strong class="example">Example 3:</strong></p>
+
+<pre>
+<strong>Input:</strong> nums = [3,3], target = 6
+<strong>Output:</strong> [0,1]
+</pre>
+
+<p>&nbsp;</p>
+<p><strong>Constraints:</strong></p>
+
+<ul>
+  <li>
+    <code>2 &lt;= nums.length &lt;= 10<sup>4</sup></code>
+  </li>
+  <li>
+    <code>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></code>
+  </li>
+  <li>
+    <code>-10<sup>9</sup> &lt;= target &lt;= 10<sup>9</sup></code>
+  </li>
+  <li><strong>Only one valid answer exists.</strong></li>
+</ul>
+
+<p>&nbsp;</p>
+<strong>Follow-up:&nbsp;</strong>Can you come up with an algorithm that is less
+than <code>O(n<sup>2</sup>)</code><font face="monospace">&nbsp;</font>time
+complexity? <strong>Tags:</strong> Array, Hash Table
+
+<h3>Hints</h3>
+
+<ul>
+  <li>
+    A really brute force way would be to search for all possible pairs of
+    numbers but that would be too slow. Again, it's best to try out brute force
+    solutions for just for completeness. It is from these brute force solutions
+    that you can come up with optimizations.
+  </li>
+  <li>
+    So, if we fix one of the numbers, say <code>x</code>, we have to scan the
+    entire array to find the next number <code>y</code> which is
+    <code>value - x</code> where value is the input parameter. Can we change our
+    array somehow so that this search becomes faster?
+  </li>
+  <li>
+    The second train of thought is, without changing the array, can we use
+    additional space somehow? Like maybe a hash map to speed up the search?
+  </li>
+</ul>
+
+<h3>Solution Summary</h3>
+
+Video Solution   Solution Article Approach 1: Brute Force Algorithm The brute
+force approach is simple. Loop through each element x and find if there is
+another
+<h3>Solution</h3>
+
+<hr />
+<h4>Approach 1: Brute Force</h4>
+<p><strong>Algorithm</strong></p>
+<p>
+  The brute force approach is simple. Loop through each element $x$ and find if
+  there is another value that equals to $target - x$.
+</p>
+<p><strong>Implementation</strong></p>
+<pre>
+class Solution {
+public:
+    vector&lt;int> twoSum(vector&lt;int> &amp;nums, int target) {
+        for (int i = 0; i &lt; nums.size(); i++) {
+            for (int j = i + 1; j &lt; nums.size(); j++) {
+                if (nums[j] == target - nums[i]) {
+                    return {i, j};
+                }
+            }
+        }
+        // Return an empty vector if no solution is found
+        return {};
+    }
+};</pre
+>
+
+<p><strong>Complexity Analysis</strong></p>
+<ul>
+  <li>
+    <p>
+      Time complexity: $O(n^2)$. For each element, we try to find its complement
+      by looping through the rest of the array which takes $O(n)$ time.
+      Therefore, the time complexity is $O(n^2)$.
+    </p>
+  </li>
+  <li>
+    <p>
+      Space complexity: $O(1)$. The space required does not depend on the size
+      of the input array, so only constant space is used.
+    </p>
+  </li>
+</ul>
+<hr />
+<h4>Approach 2: Two-pass Hash Table</h4>
+<p><strong>Intuition</strong></p>
+<p>
+  To improve our runtime complexity, we need a more efficient way to check if
+  the complement exists in the array. If the complement exists, we need to get
+  its index. What is the best way to maintain a mapping of each element in the
+  array to its index? A hash table.
+</p>
+<p>
+  We can reduce the lookup time from $O(n)$ to $O(1)$ by trading space for
+  speed. A hash table is well suited for this purpose because it supports fast
+  lookup in <em>near</em> constant time. I say "near" because if a collision
+  occurred, a lookup could degenerate to $O(n)$ time. However, lookup in a hash
+  table should be amortized $O(1)$ time as long as the hash function was chosen
+  carefully.
+</p>
+<p><strong>Algorithm</strong></p>
+<p>
+  A simple implementation uses two iterations. In the first iteration, we add
+  each element's value as a key and its index as a value to the hash table.
+  Then, in the second iteration, we check if each element's complement ($target
+  - nums[i]$) exists in the hash table. If it does exist, we return current
+  element's index and its complement's index. Beware that the complement must
+  not be $nums[i]$ itself!
+</p>
+<p><strong>Implementation</strong></p>
+<pre>
+class Solution {
+public:
+    vector&lt;int> twoSum(vector&lt;int> &amp;nums, int target) {
+        unordered_map&lt;int, int> hash;
+        for (int i = 0; i &lt; nums.size(); i++) {
+            hash[nums[i]] = i;
+        }
+        for (int i = 0; i &lt; nums.size(); i++) {
+            int complement = target - nums[i];
+            if (hash.find(complement) != hash.end() &amp;&amp; hash[complement] != i) {
+                return {i, hash[complement]};
+            }
+        }
+        // If no valid pair is found, return an empty vector
+        return {};
+    }
+};</pre
+>
+
+<p><strong>Complexity Analysis</strong></p>
+<ul>
+  <li>
+    <p>
+      Time complexity: $O(n)$. We traverse the list containing $n$ elements
+      exactly twice. Since the hash table reduces the lookup time to $O(1)$, the
+      overall time complexity is $O(n)$.
+    </p>
+  </li>
+  <li>
+    <p>
+      Space complexity: $O(n)$. The extra space required depends on the number
+      of items stored in the hash table, which stores exactly $n$ elements.
+    </p>
+  </li>
+</ul>
+<hr />
+<h4>Approach 3: One-pass Hash Table</h4>
+<p><strong>Algorithm</strong></p>
+<p>
+  It turns out we can do it in one-pass. While we are iterating and inserting
+  elements into the hash table, we also look back to check if current element's
+  complement already exists in the hash table. If it exists, we have found a
+  solution and return the indices immediately.
+</p>
+<p><strong>Implementation</strong></p>
+<pre>
+class Solution {
+public:
+    vector&lt;int> twoSum(vector&lt;int> &amp;nums, int target) {
+        unordered_map&lt;int, int> hash;
+        for (int i = 0; i &lt; nums.size(); ++i) {
+            int complement = target - nums[i];
+            if (hash.find(complement) != hash.end()) {
+                return {hash[complement], i};
+            }
+            hash[nums[i]] = i;
+        }
+        // Return an empty vector if no solution is found
+        return {};
+    }
+};</pre
+>
+
+<p><strong>Complexity Analysis</strong></p>
+<ul>
+  <li>
+    <p>
+      Time complexity: $O(n)$. We traverse the list containing $n$ elements only
+      once. Each lookup in the table costs only $O(1)$ time.
+    </p>
+  </li>
+  <li>
+    <p>
+      Space complexity: $O(n)$. The extra space required depends on the number
+      of items stored in the hash table, which stores at most $n$ elements.
+    </p>
+  </li>
+</ul>
