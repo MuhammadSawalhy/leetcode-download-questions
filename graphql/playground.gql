@@ -1,0 +1,18 @@
+query fetchPlayground($uuid: String!) {
+	playground(uuid: $uuid) {
+		testcaseInput
+		name
+		isUserOwner
+		isLive
+		showRunCode
+		showOpenInPlayground
+		selectedLangSlug
+		isShared
+		__typename
+	}
+	allPlaygroundCodes(uuid: $uuid) {
+		code
+		langSlug
+		__typename
+	}
+}
