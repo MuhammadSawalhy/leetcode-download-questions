@@ -1,6 +1,4 @@
-Basically a fork of [yask's repo](https://github.com/yask123/all_leetcode_questions) but I don't think the repo name 'all-leetcode-questions' fits given the smaller amount of questions here.
-
-Repo is updated to work with LeetCode's GraphQL API and only includes the [Blind 75](https://www.teamblind.com/post/New-Year-Gift---Curated-List-of-Top-75-LeetCode-Questions-to-Save-Your-Time-OaM1orEU). The code should theoretically work with any Leetcode question list though.
+This repo uses LeetCode's GraphQL API and only includes the [Blind 75](https://www.teamblind.com/post/New-Year-Gift---Curated-List-of-Top-75-LeetCode-Questions-to-Save-Your-Time-OaM1orEU). The code should theoretically work with any Leetcode question list though.
 
 Questions are currently only available in PDF format.
 
@@ -8,13 +6,26 @@ Feel free to submit a PR to include other lists e.g topic specific lists.
 
 ### Usage
 
-You can download '.pdf' file from this repo and view it however you want.
+This is how to use the script `export_questions.py`:
+
+```
+usage: export_questions.py [-h] (--link LINK | --all | --concatenate) [--output OUTPUT] [--force] [--llm LLM]
+
+LeetCode problem fetcher
+
+options:
+  -h, --help         show this help message and exit
+  --link LINK        Fetch a specific problem by providing its link
+  --all              Generate all ungenerated problems from question_links.txt unless --force is enabled
+  --concatenate      Concatenate all problem files into one HTML file
+  --output OUTPUT    Output file for concatenation (default: output.html)
+  --force            Force generation of all the problems even previous genereted ones
+  --llm=<true/false> Use LLMs to finetune the result? (true/false)
+```
 
 ### Building PDF
 
-This repo relies on WeasyPrint which itself has some annoying dependencies to install. Refer to their [documentation](https://doc.courtbouillon.org/weasyprint/latest/first_steps.html) for platform specific installation steps.
-
-**NOTE** For MacOS you may also need to install LibMagic with `brew install libmagic`
+The main goal for this repo is to generate a well structured form then you can use any tool to convert it to a PDF. Each problem is extracted to a separate HTML file in the directory `problems/` and an LLM (i.e. Gemini Flash 2.0) is used to finetune the result and add a solution.
 
 Run the following to install other dependencies
 
@@ -24,7 +35,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-In virtualenv, run `python3 export_questions.py` to generate PDF.
+In virtualenv, run `make` to generate a single HTML file (output.html) for all the problems.
 
 ### Updating questions
 
