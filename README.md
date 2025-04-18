@@ -1,6 +1,4 @@
-This repo uses LeetCode's GraphQL API and only includes the [Blind 75](https://www.teamblind.com/post/New-Year-Gift---Curated-List-of-Top-75-LeetCode-Questions-to-Save-Your-Time-OaM1orEU). The code should theoretically work with any Leetcode question list though.
-
-Questions are currently only available in PDF format.
+This repo uses LeetCode's GraphQL API and only includes the [Blind 75](https://www.teamblind.com/post/New-Year-Gift---Curated-List-of-Top-75-LeetCode-Questions-to-Save-Your-Time-OaM1orEU). The problems are extracted to HTML files that can be later converted to PDF files or a single file containing all the problems.
 
 Feel free to submit a PR to include other lists e.g topic specific lists.
 
@@ -25,9 +23,9 @@ options:
 
 ### Building PDF
 
-The main goal for this repo is to generate a well structured form then you can use any tool to convert it to a PDF. Each problem is extracted to a separate HTML file in the directory `problems/` and an LLM (i.e. Gemini Flash 2.0) is used to finetune the result and add a solution.
+The main goal for this repo is to generate a well structured form then you can use any tool to convert it to a PDF. Each problem is extracted to a separate HTML file in the directory `problems/` and an LLM (i.e. Gemini Flash 2.0) is used to finetune the result and add a solution if it doesn't exist.
 
-Run the following to install other dependencies
+Use a virtual Python environment and install the requirements:
 
 ```python
 virtualenv .venv
@@ -35,7 +33,13 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-In virtualenv, run `make` to generate a single HTML file (output.html) for all the problems.
+Now you can use one of the Makefile scripts:
+
+- `make all` to generate an HTML file for all the problems that doesn't have an HTML in `problems/` directory.
+  - If you want to overwrite an existing HTML you can use `python export-problems.py --link <problem-linl>`
+- `make output.html` to generate a single HTML file for all the problems.
+- `make` or `make output.pdf` to generate a single PDF file for all the problems.
+  - You need to install `pandoc` and `weasyprint` tools first if you want to generate the PDF.
 
 ### Updating questions
 
